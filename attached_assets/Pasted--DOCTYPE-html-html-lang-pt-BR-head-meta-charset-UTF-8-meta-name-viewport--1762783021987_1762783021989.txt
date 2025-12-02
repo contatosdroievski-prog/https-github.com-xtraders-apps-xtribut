@@ -1,0 +1,3903 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XTributation - Plataforma Unificada</title>
+    <!-- Dependências e Estilos -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Dependências para o Resumo Anual Aprimorado -->
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body class="antialiased" style="overflow: hidden;">
+
+    <style>
+/* === SISTEMA DE DESIGN PREMIUM: TEMA GOLD & BLACK / GLASSMORPHISM === */
+:root {
+    /* Paleta de Cores (Premium Dark) */
+    --bg-primary: #0D0D0D;      /* Fundo principal, preto profundo */
+    --surface-card: rgba(26, 26, 26, 0); /* Grafite semi-transparente para o efeito de vidro */
+    --surface-card-solid: #1A1A1A; /* Versão sólida do card para fundos */
+    --border-color: rgba(212, 175, 55, 0.2); /* Borda dourada muito sutil */
+    --text-primary: #F0F0F0;      /* Branco suave para títulos e textos importantes */
+    --text-secondary: #B3B3B3;    /* Cinza claro para textos secundários e de apoio */
+    --accent-primary: #D4AF37;    /* Dourado metálico principal */
+    --accent-hover: #E7C668;      /* Dourado mais claro para hover */
+    --positive-color: #0aff39;    /* Verde para lucro (maior contraste) */
+    --negative-color: #ff0a0a;    /* Vermelho para perda (maior contraste) */
+    --warning-color: var(--accent-primary); /* Amarelo para aviso, usando o dourado */
+
+    /* Tipografia */
+    --font-family: 'Sora', sans-serif;
+    --font-size-base: 16px;
+    --line-height-base: 1.6;
+
+    /* Sistema de Espaçamento */
+    --space-xs: 0.5rem;   /* 8px */
+    --space-sm: 1rem;     /* 16px */
+    --space-md: 1.5rem;   /* 24px */
+    --space-lg: 2.5rem;   /* 40px */
+    --space-xl: 4rem;     /* 64px */
+
+    /* Bordas e Sombras */
+    --border-radius-sm: 8px;
+    --border-radius-lg: 20px; /* Bordas mais arredondadas para um look moderno */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.3);
+    --shadow-md: 0 5px 15px rgba(0,0,0,0.4);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.5);
+
+    /* Transições */
+    --transition-fluid: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html {  
+    scroll-behavior: smooth;  
+    font-size: var(--font-size-base);
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-primary);
+    background-image: linear-gradient(180deg, #1A1A1A 0%, #0D0D0D 100%);
+    background-attachment: fixed;
+    color: var(--text-secondary);
+    line-height: var(--line-height-base);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transition: all 0.5s ease;
+}
+
+.content-wrapper {  
+    position: relative;  
+    z-index: 1;  
+    margin: 0 auto;  
+    padding: var(--space-xl) var(--space-md);  
+    max-width: 1200px;
+  overflow-x: hidden;
+}
+
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(0px); } to { opacity: 1; transform: translateY(0); } }
+.stagger-in {
+    animation: fadeInUp 0.5s var(--transition-fluid) both;
+    animation-delay: calc(var(--stagger-index) * 100ms);
+}
+
+/* === HIERARQUIA TIPOGRÁFICA REFINADA === */
+h1, h2, h3, h4, h5 {  
+    color: var(--text-primary);  
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+    line-height: 1.3;
+    transition: all 0.5s ease;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    letter-spacing: +0.02em;
+
+}
+h1 { font-size: 2.5rem; line-height: 1.2; text-align: center;}
+h2 { font-size: 2rem; line-height: 1.3; text-align: center; }
+h3 { font-size: 1.5rem; line-height: 1.4; }
+h4 { font-size: 1.125rem; font-weight: 600; color: var(--text-secondary); }
+h5 { font-family: "Inter" ; font-size: 2.0rem; line-height: 1.4; letter-spacing: 0.1em; color: var(--accent-primary); }
+
+
+.text-positive { color: var(--positive-color) !important; }
+.text-negative { color: var(--negative-color) !important; }
+.text-accent-primary { color: var(--accent-primary); }
+.logo-path { fill: var(--accent-primary); }
+
+.logo { display: flex; justify-content: center; align-items: center; margin-bottom: var(--space-lg);  }
+
+
+/* === COMPONENTES PREMIUM === */
+
+@keyframes gradient-animation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.btn {  
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs);  
+    padding: 0.75rem var(--space-md);  
+    border-radius: var(--border-radius-sm);
+    font-weight: 600;  
+    font-size: 0.95rem;
+    transition: var(--transition-fluid);  
+    border: 1px solid transparent;  
+    transform: scale(1);
+    box-shadow: none;
+}
+.btn:hover {  
+    transform: translateY(-0px);
+    box-shadow: var(--shadow-md);
+}
+.btn:disabled { cursor: not-allowed; opacity: 0.5; transform: none; box-shadow: none; }
+
+.btn-primary {  
+    background: linear-gradient(45deg, var(--accent-hover), #FFEE99 , var(--accent-hover));
+    background-size: 150% auto;
+    color: #0D0D0D;  
+    border-color: transparent;
+    transition: 0.9s;
+}
+
+.btn-primary:active { transform: scale(0.98);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+    background: linear-gradient(45deg, var(--accent-hover), #FFEE99  , var(--accent-hover));
+    background-size: 250% auto;
+    color: #0D0D0D;
+    border-color: transparent;
+    transition: 0.5s;
+
+}
+.btn-primary:hover:not(:disabled) {  
+    animation: gradient-animation 3s ease infinite;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.btn-secondary {  
+    background-color: transparent;
+    color: var(--accent-primary);  
+    border-color: var(--accent-primary);
+}
+.btn-secondary:hover:not(:disabled) { 
+  background: linear-gradient(45deg, var(--accent-hover), #FFEE99  , var(--accent-hover));
+    color: #0D0D0D; 
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.btn-danger {  
+    background-color: transparent;  
+    border-color: var(--negative-color);  
+    color: var(--negative-color);
+}
+.btn-danger:hover { background-color: var(--negative-color); color: #FFFFFF; }
+
+
+.input-field {  
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);  
+    padding: 0.75rem var(--space-sm);  
+    width: 100%;  
+    transition: var(--transition-fluid);  
+    background-color: #0D0D0D;  
+    color: var(--text-primary);  
+    font-size: 1rem;  
+    box-shadow: none;
+}
+.input-field:hover { border-color: var(--accent-primary); box-shadow: var(--shadow-sm); }    
+.input-field:focus {  
+    border-color: var(--accent-primary);  
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);  
+    outline: none;  
+}
+.password-container { position: relative; }
+.password-toggle { position: absolute; top: 50%; transform: translateY(-0%); right: var(--space-sm); background: none; border: none; cursor: pointer; color: var(--text-secondary); transition: color 0.2s; padding: 0; }
+.password-toggle:hover { color: var(--text-primary); }
+
+.card {
+    background-color: var(--surface-card);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--border-radius-lg);
+    position: relative;
+    transition: var(--transition-fluid);
+}
+.card:hover {
+    transform: translateY(-0px);
+}
+
+.tab-container {  
+    display: inline-flex; 
+    gap: var(--space-xs); 
+    padding: var(--space-xs);  
+    background: var(--surface-card-solid);
+    border: 1px solid var(--border-color);  
+    border-radius: var(--border-radius-sm);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.4);
+    position: relative;
+}
+
+#active-tab-slider {
+    position: absolute;
+    top: var(--space-xs);
+    left: 0;
+    height: calc(100% - (var(--space-xs) * 2));
+    border-radius: 6px;
+    background: linear-gradient(45deg, #B3781C, #FFEE99 , #62400C);
+    box-shadow: 0 2px 8px -2px var(--accent-primary);
+    z-index: 1;
+    background: linear-gradient(45deg, var(--accent-hover), #FFEE99  , var(--accent-hover));
+    background-size: 250% auto;
+    color: #0D0D0D;  
+    border-color: transparent;
+    transition: 0.5s;
+}
+
+.main-tab-button {  
+    padding: 0.6rem 1.25rem;  
+    font-weight: 600;  
+    font-size: 0.9rem;  
+    cursor: pointer;  
+    border: 1px solid transparent;  
+    border-radius: var(--border-radius-sm);
+    background-color: transparent;
+    color: var(--text-secondary);
+    position: relative;
+    z-index: 2;
+    transition: all 1s ease-in-out;
+}
+.main-tab-button.active {  
+    color: #0D0D0D; 
+    transition: all 1s ease-in-out;
+    animation: gradient-animation 8s ease infinite;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+.main-tab-button.active:hover { color: #0D0D0D;
+    animation: gradient-animation 8s ease infinite;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+    transition: all 1s ease-in-out;
+
+}
+.hidden { display: none !important; }
+.loader { border: 4px solid rgba(212, 175, 55, 0.2); border-top: 4px solid var(--accent-primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.month-card {  
+    border: 1px solid var(--border-color); border-radius: var(--border-radius-sm); padding: var(--space-md);  
+    text-align: center; cursor: pointer; transition: var(--transition-fluid);  
+    background-color: var(--surface-card-solid);
+    box-shadow: var(--shadow-sm);
+}
+.month-card:hover { transform: translateY(-0px); border-color: var(--accent-primary); box-shadow: var(--shadow-md); }
+.month-card.profit { border-left: 4px solid var(--positive-color); }
+.month-card.loss { border-left: 4px solid var(--negative-color); }
+.month-name { font-size: 1rem; font-weight: 600; color: var(--text-primary); }
+.month-result { font-size: 1.25rem; font-weight: 700; margin-top: var(--space-xs); }
+
+.modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(13, 13, 13, 0.8); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; z-index: 1500; opacity: 0; visibility: hidden; transition: all 0.3s ease-in-out; }
+.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal-content { background-color: var(--surface-card); border: 1px solid var(--border-color); padding: var(--space-lg); border-radius: var(--border-radius-lg); max-width: 90%; width: 800px; max-height: 90vh; overflow-y: auto; transform: scale(0.95); transition: all 0.3s ease-in-out; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); }
+.modal-overlay.active .modal-content { transform: scale(1); }
+
+.important-note { margin-top: var(--space-md); padding: var(--space-sm) var(--space-md); border-radius: var(--border-radius-sm); background-color: rgba(0, 0, 0, 0.5); border: 2px solid var(--border-color); border-left: 4px solid var(--warning-color); transition: var(--transition-fluid);  }
+.important-note p:first-child { color: var(--warning-color); font-weight: 600;}
+.important-note p:last-child { color: var(--text-secondary); opacity: 0.9;}
+
+#login-screen, #register-screen, #no-access-screen { background-color: var(--bg-primary); display: flex; justify-content: center; align-items: center; height: 100vh; width: 100%; position: fixed; top: 0; left: 0; z-index: 2000; }
+.login-box { text-align: center; width: 100%; max-width: 700px; animation: fadeInUp 0.5s var(--transition-fluid) both; background-color: var(--surface-card); border: 1px solid var(--border-color); padding: var(--space-lg); border-radius: var(--border-radius-lg); box-shadow: var(--shadow-lg); }
+.message { margin-top: var(--space-sm); font-weight: 500; display: none; padding: 0.75rem; border-radius: var(--border-radius-sm); font-size: 0.9rem; }
+.message.error { color: var(--negative-color); background-color: rgba(220, 53, 69, 0.1); border: 1px solid rgba(220, 53, 69, 0.3); }
+.message.success { color: var(--positive-color); background-color: rgba(40, 167, 69, 0.1); border: 1px solid rgba(40, 167, 69, 0.3); }
+
+#auth-container { position: fixed; top: var(--space-sm); right: var(--space-sm); z-index: 1001; background: var(--surface-card); backdrop-filter: blur(10px); padding: var(--space-xs) 0.75rem; border-radius: var(--border-radius-sm); display: flex; align-items: center; gap: var(--space-sm); border: 1px solid var(--border-color); box-shadow: var(--shadow-md); }
+
+#loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: var(--bg-primary); z-index: 1999; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; transition: opacity 0.5s ease-out; }
+
+#tour-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 9998; opacity: 0; transition: opacity 0.3s ease-out;
+    pointer-events: none;
+}
+#tour-overlay.active { opacity: 1; pointer-events: all; }
+.tour-highlight { position: absolute; transition: var(--transition-fluid); border: 2px solid var(--accent-primary); box-shadow: 0 0 25px 5px rgba(212, 175, 55, 0.3); border-radius: var(--border-radius-lg); }
+.tour-tooltip { position: absolute; z-index: 9999; background: var(--surface-card-solid); border-radius: var(--border-radius-lg); border: 1px solid var(--border-color); width: 320px; padding: var(--space-md); animation: fadeInUp 0.4s var(--transition-fluid) both; box-shadow: var(--shadow-lg); }
+.tour-nav { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); margin-top: var(--space-md); padding-top: var(--space-sm);}
+
+#terms-modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;  
+    background-color: rgba(13, 13, 13, 0.8);
+    backdrop-filter: blur(8px);  
+    display: none;
+    align-items: center;  
+    justify-content: center;  
+    z-index: 2500;
+}
+.terms-text-container {
+    max-height: 55vh; overflow-y: auto;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    padding: var(--space-md); border-radius: var(--border-radius-sm);
+    margin-bottom: var(--space-md); color: var(--text-secondary); line-height: 1.7;
+}
+.terms-text-container p { margin-bottom: var(--space-sm); }
+.terms-text-container strong { color: var(--text-primary); }
+.terms-text-container h4 { color: var(--accent-primary); text-align: center; font-size: 1.25rem; margin-bottom: var(--space-md);}
+
+.custom-checkbox-label { display: flex; align-items: center; cursor: pointer; font-size: 1rem; color: var(--text-primary); }
+.custom-checkbox {
+    appearance: none; width: 1.25rem; height: 1.25rem; border: 2px solid var(--border-color);
+    border-radius: 4px; margin-right: var(--space-xs); position: relative;
+    transition: var(--transition-fluid); background-color: var(--surface-card-solid);
+}
+.custom-checkbox:checked { background-color: var(--accent-primary); border-color: var(--accent-primary); }
+.custom-checkbox:checked::after {
+    content: '✓'; font-size: 1rem; color: #0D0D0D; position: absolute;
+    top: 50%; left: 50%; transform: translate(-0%, -0%); font-weight: bold;
+}
+
+.kpi-card {
+    background-color: var(--surface-card-solid);
+    border-radius: var(--border-radius-sm);
+    padding: var(--space-md);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-fluid);
+    text-align: center;
+}
+.kpi-card:hover {
+    transform: translateY(-0px);
+    box-shadow: 0 0 15px  #d4af3758;
+    border-color: rgba(212, 175, 55, 0.5);
+}
+.kpi-card-title {
+    font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);
+    text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-xs);
+}
+.kpi-card-value {
+    font-size: 1.75rem; font-weight: 700; color: var(--text-primary); line-height: 1.2;
+}
+
+/* Gráfico */
+canvas { filter: brightness(1.1); }
+
+/* Tabelas com novo design */
+table th {
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.75rem 0.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+}
+table td {
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+    color: var(--text-primary);
+}
+table tbody tr:last-child td {
+    border-bottom: none;
+}
+table th:last-child, table td:last-child {
+    text-align: right;
+}
+table th.text-center, table td.text-center {
+    text-align: center;
+}
+
+/* === PASSO 2: REFINAMENTOS ADICIONAIS E AJUSTES FINOS === */
+
+/* REFINAMENTO 1: Hierarquia de Botões Mais Clara */
+
+/* Botão Primário (sem alterações, já está bom) */
+
+
+
+/* REFINAMENTO 2: Estilo para os Novos Ícones da Tabela */
+.table-icon-button {
+    background: none;
+    border: none;
+    padding: 0.25rem;
+    cursor: pointer;
+    color: var(--text-secondary); /* Cor padrão dos ícones */
+    transition: var(--transition-fluid);
+    border-radius: 50%;
+}
+
+.table-icon-button:hover {
+    color: var(--accent-primary); /* Ícone fica dourado no hover */
+    background-color: rgba(212, 175, 55, 0.15);
+    transform: scale(1.1);
+}
+
+
+/* REFINAMENTO 3: Tabelas Ultra Clean */
+table {
+    border-collapse: collapse; /* Essencial para o estilo limpo */
+    width: 100%;
+}
+table th {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 0.75rem;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em; /* Mais espaçamento para um look premium */
+    color: var(--text-secondary);
+}
+table td {
+    padding: 1.25rem 0.75rem; /* Mais espaçamento vertical */
+    border-bottom: 1px solid rgba(212, 175, 55, 0.1); /* Linha divisória mais sutil */
+    color: var(--text-primary);
+}
+table tbody tr:hover td {
+    background-color: rgba(26, 26, 26, 0.5);
+}
+
+
+/* REFINAMENTO 4: Foco do Input Mais Elegante */
+.input-field:focus {  
+    border-color: var(--accent-primary);  
+    /* Sombra interna sutil para dar profundidade, em vez da externa */
+    box-shadow: inset 0 0 10px rgba(212, 175, 55, 0.2); 
+    outline: none;  
+}
+
+/* Monthly Assets Grid */
+.monthly-assets-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+    flex: 1;
+    align-content: start;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.monthly-asset-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1.2rem 1rem;
+    border-left: 3px solid var(--accent-primary);
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    text-align: center;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: var(--transition-fluid);
+}
+
+.monthly-asset-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
+}
+
+.monthly-asset-card .month-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+}
+
+.monthly-asset-card .best-asset {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0.5rem 0;
+    line-height: 1.2;
+}
+
+.monthly-asset-card .asset-profit {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-primary);
+    margin-top: 0.25rem;
+}
+
+/* ======================================================================= */
+/* CORREÇÃO DO ÍCONE DO CALENDÁRIO (PARA TEMA ESCURO) */
+/* ======================================================================= */
+
+/* 1. Prepara o campo de data para receber nosso ícone */
+input[type="date"].input-field {
+    position: relative;
+    /* Adiciona espaço à direita para o novo ícone não sobrepor o texto */
+    padding-right: 2.5rem; 
+}
+
+/* 2. Adiciona nosso ícone de calendário BRANCO como uma imagem de fundo */
+input[type="date"].input-field {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%23F0F0F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+    background-repeat: no-repeat;
+    background-position: right 1rem center; /* Posiciona o ícone à direita */
+}
+
+/* 3. Esconde o ícone de calendário PRETO padrão do navegador */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    /* Deixa o ícone original completamente transparente, mas ainda funcional */
+    opacity: 0;
+    cursor: pointer;
+
+    /* Faz a área clicável do ícone invisível cobrir todo o campo para facilitar o clique */
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+
+@media (max-width: 600px) {
+    .content-wrapper { padding: var(--space-lg) var(--space-sm); }
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.5rem; }
+    .card { padding: var(--space-md); }
+    .kpi-card { padding: var(--space-sm); }
+    .kpi-card-value { font-size: 1.5rem; }
+    .modal-content { width: 90%; padding: var(--space-md); }
+    .tab-container { gap: var(--space-xs); padding: var(--space-xs);  }
+    .main-tab-button { padding: 0.5rem 1rem; font-size: 0.85rem;}
+
+    .login-box { max-width: 90%; padding: var(--space-md); }
+    #auth-container { top: var(--space-xs); right: var(--space-xs); padding: var(--space-xs) 0.5rem; }
+    #auth-container span { display: none;  }
+    #loading-overlay { padding: var(--space-md); }
+    #loading-overlay h2 { font-size: 1.25rem; }
+    .month-card { padding: var(--space-sm); }
+    .month-name { font-size: 0.9rem; }
+    .month-result { font-size: 1.1rem; }
+    .kpi-card-title { font-size: 0.75rem; }
+    .terms-text-container { max-height: 50vh; }
+    .modal-overlay { padding: var(--space-sm); }
+    .modal-content { max-height: 80vh; }
+
+    /* Wrapped Mobile Styles */
+    .mySwiper .swiper-slide {
+        width: 320px;
+        height: 600px;
+    }
+
+    .mySwiper .swiper-slide-active {
+        transform: scale(1);
+    }
+
+    .slide-content {
+        padding: 1.5rem 1.2rem;
+    }
+
+    .monthly-assets-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+
+
+}/* === ESTILOS PARA O RESUMO ANUAL (WRAPPED) - DESIGN MINIMALISTA PROFISSIONAL === */
+
+/* Container Principal */
+.wrapped-container {
+  width: 100%;
+  min-height: 100vh;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.5rem 0 1rem;
+  position: relative;
+}
+
+.wrapped-title-main {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: center;
+  margin-bottom: 0.25rem;
+  letter-spacing: -0.02em;
+  margin-top: 0.5rem;
+}
+
+.wrapped-subtitle-main {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 4rem;
+  opacity: 0.8;
+  font-weight: 400;
+}
+
+/* Swiper Container */
+.mySwiper {
+  width: 100%;
+  max-width: 100%;
+  padding: 20px 0 30px;
+  position: relative;
+  margin-bottom: 60px;
+  min-height: 720px;
+}
+
+.mySwiper .swiper-wrapper {
+  align-items: center;
+}
+
+.mySwiper .swiper-slide {
+  width: 580px;
+  height: 750px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--surface-card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s ease;
+  display: flex;
+  flex-direction: column;
+  opacity: 0.6;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.mySwiper .swiper-slide-active {
+  opacity: 1;
+  box-shadow: 0 16px 48px rgba(212, 175, 55, 0.15);
+  border-color: var(--accent-primary);
+  z-index: 10;
+}
+
+/* Slide de Abertura */
+.wrapped-slide-intro {
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+  color: #0D0D0D;
+  border: none;
+}
+
+/* Slides Normais */
+.wrapped-slide {
+  background: var(--surface-card);
+}
+
+.slide-content {
+  padding: 2rem 1.8rem;
+  height: 100%;
+  width: 100%;  
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.slide-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.0rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Slide de Abertura - Conteúdo */
+.intro-content {
+  text-align: center;
+  color:var(--accent-primary);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.intro-title {
+  font-size: 2.05rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.intro-subtitle {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+.intro-year {
+  font-size: 5rem;
+    color: var(--text-primary);
+  font-weight: 900;
+  opacity: 0.1;
+  position: absolute;
+  bottom: 0rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Card Principal de Resultado */
+.main-result-card {
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid var(--accent-primary);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.result-label {
+    font-size: 0.8rem;
+    color: var(--accent-primary);
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.result-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+/* Grid de Métricas Combinado */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    width: 100%;
+    flex: 1;
+}
+
+.metric-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 0.8rem 0.6rem;
+    text-align: center;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 65px;
+    transition: var(--transition-fluid);
+}
+
+.metric-card:hover {
+    border-color: var(--accent-primary);
+    transform: translateY(-1px);
+}
+
+.metric-label {
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
+    font-weight: 500;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+
+
+
+.performance-card {
+    background: rgb(252, 252, 252, 0.73);
+    border-radius: var(--border-radius-sm);
+  color: var(--text-primary);
+    padding: 1.2rem;
+    border: 1px solid transparent;
+  border-color: var(--border-color);
+
+}
+.performance-card.positive {
+    border-color: var(--border-color);
+}
+.performance-card.negative {
+    border-color: var(--border-color);
+}
+.performance-label {
+    font-size: 0.8rem;
+  color: var(--text-primary);
+
+    margin-bottom: 0.5rem;
+}
+.performance-value {
+    font-size: 1.3rem;
+  color: var(--text-primary);
+
+    font-weight: 600;
+}
+
+/* Slide 3: Top 5 Ativos */
+.assets-ranking {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    width: 100%;
+    height: 100px;
+margin-top: 28%;
+}
+.asset-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-sm);
+    padding: 0.8rem 2.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-left: 3px solid var(--accent-primary);
+    height: 80px;
+}
+.asset-rank-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.asset-rank {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+.asset-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: left;
+}
+.asset-profit {
+    font-weight: 600;
+    color: var(--accent-primary);
+}
+
+/* Slide 4: Evolução Mensal */
+.chart-container {
+    width: 100%;
+    height: 220px;
+    margin-top: 120px;
+    margin-bottom: 1.2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    padding: 0.4rem;
+    flex-shrink: 0;
+}
+.month-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+    flex-shrink: 0;
+}
+.month-card {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 70px;
+}
+
+.month-label {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.4rem;
+    font-weight: 500;
+    line-height: 1.1;
+}
+
+.month-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.1;
+}
+
+/* Slide 5: Mês a Mês */
+.monthly-assets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Ajuste para responsividade e garantir que todos os meses caibam */
+    gap: 0.5rem;
+    width: 100%;
+    overflow-y: hidden;
+    align-content: center;
+        margin-top: 40px;
+
+}
+.monthly-asset-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-sm);
+    padding: 0.8rem 0.5rem; /* Ajuste de padding */
+    text-align: center;
+    border: 1px solid rgba(212, 175, 55, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 70px;
+    box-sizing: border-box; /* Garante que padding e border sejam incluídos na largura total */
+}
+.month-label {
+    font-size: 0.8rem; /* Ajuste de tamanho */
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem; /* Ajuste de margem */
+}
+.best-asset {
+    font-size: 0.9rem; /* Ajuste de tamanho */
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0.25rem 0;
+}
+
+/* Slide 6: Resumo Final / Exportação */
+.summary-card-export {
+   width: 100%;
+    max-width: 420px;
+  max-height: 610px;
+    background: #1C1C1C;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    gap: 1.2rem;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+.summary-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+.summary-body {
+    text-align: center;
+}
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+.summary-footer {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+/* Additional Wrapped Styles */
+.wrapped-title-main {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.wrapped-subtitle-main {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 3rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* === ESTILOS PARA O RESUMO ANUAL (WRAPPED) - CARD FINAL === */
+
+.wrapped-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+}
+
+.final-summary-card {
+    width: 100%;
+    max-width: 420px;
+  max-height: 610px;
+    background: #1C1C1C;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    gap: 1.2rem;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+
+.final-card-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    letter-spacing: 0.1em;
+}
+
+.final-card-main-metric {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.main-metric-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+.main-metric-value {
+    font-size: 2.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.2;
+}
+
+.final-card-secondary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.secondary-metric-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-sm);
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.secondary-metric-card.positive {
+    border-color: var(--positive-color);
+}
+.secondary-metric-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+     font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem; /* Aumenta um pouco o espaço entre label e valor */
+    line-height: 1.2; /* Adiciona uma altura de linha explícita */
+}
+.secondary-metric-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+     font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.1; /* Adiciona uma altura de linha explícita */
+}
+
+/* CSS CORRIGIDO E FINAL para o alinhamento do ativo */
+.final-card-top-asset {
+    display: grid; /* Mude para GRID */
+    grid-template-columns: 1fr auto; /* << A MÁGICA ACONTECE AQUI */
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-sm);
+    padding: 0.8rem 1.2rem;
+    border-left: 3px solid var(--accent-primary);
+}
+.top-asset-rank {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+.top-asset-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: left;
+}
+.top-asset-profit-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+.top-asset-profit-value {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.final-card-chart-container {
+    width: 100%;
+    height: 180px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-sm);
+    padding: 1rem;
+}
+
+.final-card-footer {
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-align: center;
+    color: var(--text-primary);
+    letter-spacing: 0.2em;
+}
+
+.action-buttons {
+    text-align: center;
+}
+
+/* Logo X no final dos cards */
+.card-logo-x {
+  position: absolute;
+  bottom: 2rem;
+  right: 2rem;
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--accent-primary);
+  opacity: 0.3;
+}
+
+.wrapped-slide.gold-background .card-logo-x {
+  color: rgba(0, 0, 0, 0.2);
+}
+
+        /* --- NEW STYLES FOR INTRO SLIDE V2 --- */
+        /* This replaces the old .wrapped-slide-intro */
+        .wrapped-slide-intro-v2 {
+            background: #191919;
+            border: 1px solid #9C7B0E;
+            border-radius: 43px; /* From Figma */
+            color: #FFFFFF;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 2rem;
+            box-sizing: border-box;
+        }
+
+        .intro-v2-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Positions header at top, footer at bottom */
+            align-items: center;
+            text-align: center;
+        }
+
+        .intro-v2-header, .intro-v2-footer {
+            flex-shrink: 0; /* Prevents text from shrinking */
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .intro-v2-header {
+            font-size: 2.5rem;
+        }
+
+        .intro-v2-footer {
+            font-size: 3rem;
+            font-family: serif; /* Using a serif font to mimic 'Copperplate' */
+            font-weight: bold;
+        }
+
+        .intro-v2-logo {
+            font-size: 30rem; /* Huge font size for the 'X' */
+            font-weight: 900;
+            line-height: 1;
+
+
+            /* Golden Gradient Text Effect */
+            background: linear-gradient(90deg, #D4AF37 0%, #FFEE99 47.6%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-emphasis-color: transparent;
+
+            /* Glow Effect */
+            text-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Container Principal e Swiper (sem alterações) */
+        .wrapped-container { width: 100%; min-height: 100vh; background: transparent; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 0.5rem 0 1rem; position: relative; overflow-x: hidden; }
+        .wrapped-title-main { font-size: 2rem; font-weight: 700; color: var(--text-primary); text-align: center; margin-bottom: 0.25rem; letter-spacing: -0.02em; margin-top: 0.5rem; }
+        .wrapped-subtitle-main { font-size: 1rem; color: var(--text-secondary); text-align: center; margin-bottom: 4rem; opacity: 0.8; font-weight: 400; }
+        .mySwiper { width: 100%; max-width: 100%; padding: 20px 0 30px; position: relative; margin-bottom: 60px; min-height: 720px; }
+        .mySwiper .swiper-wrapper { align-items: center; }
+        
+
+        /* --- ESTILOS CORRIGIDOS PARA O SLIDE 1 --- */
+        .wrapped-slide-intro-v2 {
+            background: #191919;
+            border: 1px solid #9C7B0E;
+            border-radius: 43px;
+            padding: 0; /* Remove padding for absolute positioning */
+        }
+
+        /* Container para posicionamento */
+        .intro-v2-content {
+            position: relative; /* Base para o posicionamento absoluto */
+            width: 100%;
+            height: 100%;
+        }
+
+        .intro-v2-header {
+            position: absolute;
+            top: 4rem; /* Distância do topo */
+            left: 50%;
+            transform: translateX(-50%); /* Centraliza horizontalmente */
+            color: #e0e0e0;
+            opacity: 1; /* Efeito "apagado" */
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .intro-v2-footer {
+            position: absolute;
+            bottom: 4rem; /* Distância do fundo */
+            left: 50%;
+            transform: translateX(-50%); /* Centraliza horizontalmente */
+            color: #e0e0e0;
+            opacity: 1; /* Efeito "apagado" */
+            font-family: 'Montserrat', sans-serif; /* Fonte sem serifa */
+            font-size: 3rem;
+            font-weight: bolder;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .intro-v2-logo {
+            position: absolute;
+            top: 29%; /* Posicionamento vertical */
+            left: 16%; /* Posicionamento horizontal */
+        }
+
+        .intro-v2-logo svg {
+            width: 400px;  /* Tamanho definido para o logo */
+            height: auto;
+            filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4)); /* Sombra para o SVG */
+
+        }
+
+        /* Define a cor do logo SVG */
+        .intro-v2-logo .logo-path {
+            fill: var(--accent-primary);
+        }
+
+        /* CSS CORRIGIDO para o alinhamento do ativo */
+.final-card-top-asset {
+    display: flex; /* Mude de grid para flex */
+    justify-content: space-between; /* Empurra os itens para as extremidades */
+    align-items: center; /* Alinha verticalmente */
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-sm);
+    padding: 0.8rem 1.2rem;
+    border-left: 3px solid var(--accent-primary);
+}
+
+/* Nova regra para o container do rank e nome */
+.top-asset-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Espaçamento entre "#1" e "XAUUSD" */
+}
+
+.top-asset-rank {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+.top-asset-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: left;
+}
+.top-asset-profit-value {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 1.1rem; /* Ajuste opcional de tamanho */
+}
+
+/* Remova ou ignore a regra .top-asset-profit-label */
+
+.export-summary-card {
+    width: 100%;
+    max-width: 420px;
+  max-height: 610px;
+    background: #1C1C1C;
+    border-radius: var(--border-radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    gap: 1.2rem;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+}
+.export-card-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    text-align: center;
+    letter-spacing: 0.1em;
+}
+.export-card-main-metric {
+    text-align: center;
+}
+/* ======================================================================= */
+/* === CSS CORRIGIDO E OTIMIZADO PARA EXPORTAÇÃO (html2canvas) === */
+/* ======================================================================= */
+
+/* Card principal do resumo final */
+.final-card-main-metric {
+    text-align: center;
+    /* Adiciona flexbox para um controle de alinhamento explícito */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.main-metric-value {
+    line-height: 1.1; /* Ajuda a remover espaçamento extra que confunde a biblioteca */
+}
+
+/* Card de métrica secundária (ex: TOTAL DE TRADES) */
+.secondary-metric-card {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-sm);
+    text-align: center;
+    border: 1px solid transparent;
+    padding: 1rem;
+    /* A MUDANÇA MAIS IMPORTANTE ESTÁ AQUI:
+      Usamos Flexbox para forçar um alinhamento vertical e horizontal perfeito.
+    */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centraliza o conteúdo na vertical */
+    align-items: center;    /* Centraliza o conteúdo na horizontal */
+    min-height: 95px;       /* Define uma altura mínima para consistência visual */
+}
+
+.secondary-metric-label {
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.secondary-metric-value {
+    line-height: 1.1;
+}
+
+/* Container do Ativo #1, com mais padding para garantir espaço */
+.final-card-top-asset {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-sm);
+    /* Aumenta o padding para dar mais "ar" verticalmente */
+    padding: 1.1rem 1.2rem; 
+    border-left: 3px solid var(--accent-primary);
+}
+</style>
+</head>
+<body class="antialiased" style="overflow: hidden;">
+
+    <div id="login-screen" style="display: flex; flex-direction: column; align-items: center;">
+        <!-- Logo no topo da página -->
+        <div style="margin-top: 1rem; margin-bottom: 3rem; position: fixed; top: 0;">
+            <svg width="187" height="27" viewBox="0 0 187 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#clip0_92_194)">
+            <path d="M44.1104 26.5309V0.544922H56.7635C59.6925 0.544922 61.9702 1.21414 63.5968 2.55258C65.2233 3.89103 66.0366 5.89675 66.0366 8.56974C66.0399 9.802 65.7699 11.0198 65.2458 12.1363C64.7239 13.2569 63.926 14.2281 62.926 14.9599C61.8304 15.7443 60.5465 16.2277 59.2033 16.3615L59.2443 14.6131L67.381 26.5338H60.4247L53.2634 15.0386L55.7471 17.1424H49.6432V26.5309H44.1104ZM49.6432 13.0513H55.5831C57.0476 13.0513 58.1733 12.7133 58.9602 12.0373C59.7471 11.3612 60.1377 10.2928 60.1318 8.83199C60.1318 7.5324 59.8057 6.53294 59.1535 5.83361C58.5014 5.13428 57.4713 4.78364 56.0635 4.7817H49.6432V13.0513Z" fill="white"/>
+            <path d="M68.9861 26.5309L79.3986 0.544922H85.3795L95.338 26.5309H89.609L80.74 2.33113L83.1828 2.09802L74.3549 26.5309H68.9861ZM74.475 20.1815L75.8194 16.1283H88.4286L88.9177 20.1815H74.475Z" fill="white"/>
+            <path d="M96.949 26.5309V0.544922H107.159C111.662 0.544922 114.991 1.63568 117.147 3.81721C119.303 5.99873 120.377 9.23217 120.369 13.5175C120.369 17.8048 119.295 21.045 117.147 23.2382C114.999 25.4314 111.67 26.5289 107.159 26.5309H96.949ZM102.482 22.2854H106.55C109.284 22.2854 111.334 21.5841 112.701 20.1815C114.068 18.779 114.745 16.5577 114.734 13.5175C114.734 10.4812 114.056 8.26087 112.701 6.85638C111.346 5.45189 109.296 4.75062 106.55 4.75256H102.482V22.2854Z" fill="white"/>
+            <path d="M122.85 26.5309V0.544922H141.033V4.79336H128.421V11.3642H139.419V15.6621H128.382V22.2854H141.033V26.5309H122.85Z" fill="white"/>
+            <path d="M143.502 26.5309V0.544922H156.152C159.081 0.544922 161.359 1.21414 162.985 2.55258C164.612 3.89103 165.426 5.89675 165.428 8.56974C165.43 9.80221 165.159 11.02 164.634 12.1363C164.113 13.2569 163.315 14.2281 162.315 14.9599C161.219 15.7443 159.935 16.2277 158.592 16.3615L158.633 14.6131L166.77 26.5338H159.813L152.655 15.0386L155.136 17.1424H149.032V26.5309H143.502ZM149.032 13.0513H154.972C156.436 13.0513 157.562 12.7133 158.349 12.0373C159.136 11.3612 159.526 10.2928 159.52 8.83199C159.52 7.5324 159.194 6.53294 158.542 5.83361C157.89 5.13428 156.86 4.78364 155.452 4.7817H149.032V13.0513Z" fill="white"/>
+            <path d="M177.496 26.9996C176.274 27.0079 175.054 26.9437 173.84 26.8073C172.84 26.6917 171.852 26.4829 170.891 26.1838C169.97 25.8874 169.073 25.5222 168.208 25.0911V19.9481C169.416 20.8672 170.774 21.572 172.223 22.0315C173.734 22.5335 175.317 22.7903 176.91 22.792C178.374 22.792 179.479 22.5123 180.225 21.9528C180.594 21.6747 180.889 21.311 181.084 20.8935C181.279 20.476 181.368 20.0174 181.344 19.5576C181.355 19.1837 181.277 18.8126 181.118 18.474C180.958 18.1354 180.72 17.8389 180.424 17.6082C179.696 17.0495 178.881 16.6134 178.011 16.3174C177.007 15.9541 175.909 15.5772 174.716 15.1868C173.874 14.9012 173.054 14.5836 172.256 14.2339C171.473 13.8944 170.746 13.4418 170.097 12.8906C169.448 12.3273 168.929 11.6316 168.574 10.8509C168.166 9.89654 167.972 8.86568 168.003 7.82923C168.006 6.85337 168.2 5.88745 168.574 4.98529C168.971 4.0259 169.57 3.16241 170.331 2.45313C171.212 1.64488 172.257 1.03381 173.395 0.661093C174.831 0.193798 176.336 -0.0298055 177.847 -0.000357685C178.82 -0.0106172 179.793 0.0546574 180.755 0.194872C181.558 0.318803 182.348 0.513837 183.116 0.777648C183.86 1.0399 184.654 1.36042 185.495 1.7538V6.89679C184.844 6.45388 184.153 6.03137 183.421 5.62926C182.675 5.22094 181.89 4.88806 181.078 4.63562C180.201 4.36821 179.291 4.22403 178.374 4.20728C177.522 4.16544 176.669 4.27093 175.852 4.51907C175.218 4.70495 174.653 5.07047 174.224 5.57098C173.841 6.04515 173.64 6.63872 173.656 7.24646C173.638 7.5991 173.691 7.95172 173.814 8.28319C173.936 8.61466 174.124 8.91814 174.367 9.17545C174.929 9.71049 175.602 10.1155 176.339 10.3614C177.18 10.6742 178.13 10.9859 179.188 11.2967C180.208 11.5966 181.212 11.9477 182.197 12.3487C183.092 12.7088 183.934 13.1871 184.701 13.7706C185.416 14.3282 185.994 15.042 186.388 15.857C186.82 16.8109 187.029 17.8502 186.997 18.8961C187.008 20.3062 186.651 21.6949 185.96 22.926C185.226 24.2007 184.13 25.2308 182.809 25.8865C181.399 26.6267 179.628 26.9977 177.496 26.9996Z" fill="white"/>
+            <path d="M0 26.5542L10.9924 12.2908L13.0075 16.752L5.83158 26.5542H0ZM16.2939 26.5542L11.0979 15.3824L3.99511 0.553711H9.71832L15.0549 12.0431L21.9819 26.5542H16.2939ZM15.0198 15.0998L13.0075 10.7086L20.5028 0.553711H26.3314L15.0198 15.0998Z" fill="white"/>
+            <path d="M28.3699 26.5368V4.79923H20.5027V0.553711H41.6469V4.79923H33.683V26.5368H28.3699Z" fill="white"/>
+            </g>
+            <defs>
+            <clipPath id="clip0_92_194">
+            <rect width="187" height="27" fill="white"/>
+            </clipPath>
+            </defs>
+            </svg>
+        </div>
+        
+        <div class="login-box">
+            <div class="mx-auto mb-8 inline-block">
+                <svg class="w-20 h-auto inline-block" viewBox="0 0 59.9 45.6" xmlns="http://www.w3.org/2000/svg">
+                    <path class="logo-path" d="M4.76369 -0.719727C2.13278 -0.719727 0 1.41305 0 4.04396V4.04396C0.00217239 3.70526 0.105853 3.37498 0.297665 3.09573C0.489477 2.81649 0.760619 2.60109 1.07611 2.47733C1.3916 2.35357 1.73695 2.32713 2.06762 2.40142C2.39829 2.47571 2.6991 2.64732 2.93124 2.89411L12.335 12.8644C13.2797 13.866 14.5956 14.4337 15.9724 14.4337H25.321C25.7157 14.4314 26.1025 14.5448 26.4334 14.7599C26.7644 14.975 27.0249 15.2823 27.1829 15.6438C27.3409 16.0054 27.3894 16.4053 27.3224 16.794C27.2553 17.1828 27.0757 17.5434 26.8058 17.8313L2.93398 43.2184C2.70202 43.4662 2.40099 43.6387 2.06985 43.7135C1.7387 43.7884 1.3927 43.7622 1.07662 43.6383C0.760551 43.5144 0.488961 43.2986 0.297012 43.0187C0.105064 42.7389 0.00159475 42.4079 0 42.0686V42.0686C0 44.6587 2.09968 46.7584 4.68977 46.7584H55.1698C57.9313 46.7584 60.1698 44.5198 60.1698 41.7584V4.28028C60.1698 1.51886 57.9313 -0.719727 55.1698 -0.719727H4.76369ZM18.297 1.59641C18.1396 1.42755 18.0354 1.2162 17.9972 0.988633C17.9591 0.761063 17.9887 0.527307 18.0824 0.316417C18.1761 0.105528 18.3297 -0.073197 18.5242 -0.197543C18.7187 -0.321889 18.9455 -0.386374 19.1763 -0.382983H40.9415C41.1711 -0.38424 41.3961 -0.318396 41.5888 -0.193551C41.7814 -0.0687055 41.9334 0.109697 42.026 0.319715C42.1185 0.529733 42.1476 0.762208 42.1097 0.988546C42.0718 1.21488 41.9686 1.42522 41.8126 1.59367L32.5669 11.5153C32.2486 11.8553 31.8638 12.1264 31.4364 12.3117C31.009 12.497 30.5481 12.5926 30.0822 12.5926C29.6163 12.5926 29.1553 12.497 28.7279 12.3117C28.3005 12.1264 27.9158 11.8553 27.5975 11.5153L18.297 1.59641ZM40.9196 46.501C40.9196 46.498 40.9171 46.4955 40.914 46.4955H19.1544C18.9243 46.4973 18.6986 46.4316 18.5054 46.3066C18.3122 46.1817 18.1598 46.0029 18.0671 45.7923C17.9745 45.5817 17.9455 45.3487 17.984 45.1219C18.0224 44.8951 18.1264 44.6845 18.2833 44.5161L27.5208 34.5973C27.8391 34.2572 28.2238 33.9862 28.6512 33.8008C29.0786 33.6155 29.5396 33.5199 30.0055 33.5199C30.4714 33.5199 30.9323 33.6155 31.3597 33.8008C31.7871 33.9862 32.1719 34.2572 32.4902 34.5973L41.788 44.5216C41.9465 44.6896 42.052 44.9004 42.0916 45.1279C42.1311 45.3553 42.1028 45.5894 42.0103 45.8009C41.9177 46.0125 41.765 46.1921 41.5711 46.3176C41.3786 46.442 41.1541 46.5077 40.925 46.5065C40.922 46.5065 40.9196 46.5041 40.9196 46.501V46.501ZM60.0959 42.0686C60.0937 42.4073 59.99 42.7376 59.7982 43.0168C59.6064 43.2961 59.3353 43.5115 59.0198 43.6352C58.7043 43.759 58.3589 43.7854 58.0283 43.7111C57.6976 43.6368 57.3968 43.4652 57.1646 43.2184L47.7636 33.2486C46.8189 32.2467 45.5029 31.6788 44.1259 31.6788H34.7776C34.3827 31.6809 33.9957 31.5673 33.6646 31.3521C33.3335 31.1369 33.0727 30.8294 32.9145 30.4678C32.7563 30.1061 32.7075 29.706 32.7743 29.3169C32.841 28.9279 33.0204 28.5669 33.2901 28.2785L57.1537 2.90506C57.3851 2.65704 57.6857 2.48423 58.0166 2.40904C58.3475 2.33386 58.6933 2.35977 59.0093 2.48342C59.3252 2.60707 59.5967 2.82274 59.7885 3.10247C59.9803 3.3822 60.0836 3.71307 60.0849 4.05217L60.0959 42.0686Z"/>
+                </svg>
+            </div>
+            
+            <h1 class="text-3xl font-semibold mb-3 text-text-primary">Sistema de Tributação</h1>
+            <h1 class="text-3xl text-text-secondary mb-6">Mercado Americano</h1>
+            
+            <form class="space-y-4">
+                <input type="email" id="email-input" placeholder="Seu e-mail" class="input-field">
+                <div class="password-container">
+                    <input type="password" id="password-input" placeholder="Sua senha" class="input-field">
+                    <button type="button" id="toggle-login-password" class="password-toggle" aria-label="Mostrar ou ocultar senha">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    </button>
+                </div>
+                
+                <button type="button" id="sign-in-button" class="mt-6 btn btn-primary w-full text-base py-3">
+                    <span>Entrar</span>
+                </button>
+            </form>
+            
+            <div class="mt-6 text-sm text-text-secondary">
+                É seu primeiro acesso? 
+                <a href="#" id="go-to-register-link" class="font-semibold text-accent-primary hover:text-accent-hover transition-colors duration-200">
+                    Crie sua conta aqui.
+                </a>
+            </div>
+            
+            <div class="mt-4 text-sm">
+                <a href="#" id="forgot-password-link" class="text-text-secondary hover:text-accent-primary transition-colors duration-200">
+                    Esqueceu a senha?
+                </a>
+            </div>
+            
+            <p id="login-message" class="message"></p>
+        </div>
+    </div>
+
+    <div id="register-screen" style="display: none;">
+        <div class="login-box">
+            <div class="mx-auto mb-8">
+                <svg class="w-20 h-auto inline-block" viewBox="0 0 60 46.4" xmlns="http://www.w3.org/2000/svg">
+                    <path class="logo-path" d="M4.76369 -0.719727C2.13278 -0.719727 0 1.41305 0 4.04396V4.04396C0.00217239 3.70526 0.105853 3.37498 0.297665 3.09573C0.489477 2.81649 0.760619 2.60109 1.07611 2.47733C1.3916 2.35357 1.73695 2.32713 2.06762 2.40142C2.39829 2.47571 2.6991 2.64732 2.93124 2.89411L12.335 12.8644C13.2797 13.866 14.5956 14.4337 15.9724 14.4337H25.321C25.7157 14.4314 26.1025 14.5448 26.4334 14.7599C26.7644 14.975 27.0249 15.2823 27.1829 15.6438C27.3409 16.0054 27.3894 16.4053 27.3224 16.794C27.2553 17.1828 27.0757 17.5434 26.8058 17.8313L2.93398 43.2184C2.70202 43.4662 2.40099 43.6387 2.06985 43.7135C1.7387 43.7884 1.3927 43.7622 1.07662 43.6383C0.760551 43.5144 0.488961 43.2986 0.297012 43.0187C0.105064 42.7389 0.00159475 42.4079 0 42.0686V42.0686C0 44.6587 2.09968 46.7584 4.68977 46.7584H55.1698C57.9313 46.7584 60.1698 44.5198 60.1698 41.7584V4.28028C60.1698 1.51886 57.9313 -0.719727 55.1698 -0.719727H4.76369ZM18.297 1.59641C18.1396 1.42755 18.0354 1.2162 17.9972 0.988633C17.9591 0.761063 17.9887 0.527307 18.0824 0.316417C18.1761 0.105528 18.3297 -0.073197 18.5242 -0.197543C18.7187 -0.321889 18.9455 -0.386374 19.1763 -0.382983H40.9415C41.1711 -0.38424 41.3961 -0.318396 41.5888 -0.193551C41.7814 -0.0687055 41.9334 0.109697 42.026 0.319715C42.1185 0.529733 42.1476 0.762208 42.1097 0.988546C42.0718 1.21488 41.9686 1.42522 41.8126 1.59367L32.5669 11.5153C32.2486 11.8553 31.8638 12.1264 31.4364 12.3117C31.009 12.497 30.5481 12.5926 30.0822 12.5926C29.6163 12.5926 29.1553 12.497 28.7279 12.3117C28.3005 12.1264 27.9158 11.8553 27.5975 11.5153L18.297 1.59641Z"/>
+                </svg>
+            </div>
+            
+            <h1 class="text-3xl font-semibold mb-3 text-text-primary">Criar Nova Conta</h1>
+            <p class="text-base text-text-secondary mb-8">Use o mesmo e-mail que você utilizou na compra.</p>
+            
+            <div class="space-y-4">
+                <input type="email" id="register-email-input" placeholder="Seu e-mail" class="input-field">
+                <div class="password-container">
+                    <input type="password" id="register-password-input" placeholder="Crie uma senha (mín. 6 caracteres)" class="input-field">
+                    <button type="button" id="toggle-register-password" class="password-toggle" aria-label="Mostrar ou ocultar senha">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    </button>
+                </div>
+                <div class="password-container">
+                    <input type="password" id="register-confirm-password-input" placeholder="Confirme sua senha" class="input-field">
+                    <button type="button" id="toggle-confirm-password" class="password-toggle" aria-label="Mostrar ou ocultar senha">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <button id="register-button" class="mt-6 btn btn-primary w-full text-base py-3">
+                <span>Cadastrar e Acessar</span>
+            </button>
+            
+            <div class="mt-6 text-sm">
+                <a href="#" id="go-to-login-link" class="font-semibold text-accent-primary hover:text-accent-hover transition-colors duration-200">Já tem uma conta? Acesse aqui.</a>
+            </div>
+            
+            <p id="register-message" class="message"></p>
+        </div>
+    </div>
+
+    <div id="no-access-screen" style="display: none;">
+        <div class="login-box">
+            <h2 class="text-3xl font-semibold mb-3 text-text-primary">Acesso Negado</h2>
+            <p class="text-base text-text-secondary mb-8">
+                Não encontramos um pagamento ativo para esta conta. Por favor, verifique o status da sua compra ou entre em contato com o suporte.
+            </p>
+            <button id="logout-from-no-access" class="mt-6 btn btn-danger w-full text-base py-3">
+                <span>Sair</span>
+            </button>
+        </div>
+    </div>
+
+    <div id="loading-overlay" style="display: flex; opacity: 1;">
+        <div class="text-center">
+             <svg class="w-20 h-auto inline-block" viewBox="0 0 60 45.6" xmlns="http://www.w3.org/2000/svg">
+                <path class="logo-path" d="M4.76369 -0.719727C2.13278 -0.719727 0 1.41305 0 4.04396V4.04396C0.00217239 3.70526 0.105853 3.37498 0.297665 3.09573C0.489477 2.81649 0.760619 2.60109 1.07611 2.47733C1.3916 2.35357 1.73695 2.32713 2.06762 2.40142C2.39829 2.47571 2.6991 2.64732 2.93124 2.89411L12.335 12.8644C13.2797 13.866 14.5956 14.4337 15.9724 14.4337H25.321C25.7157 14.4314 26.1025 14.5448 26.4334 14.7599C26.7644 14.975 27.0249 15.2823 27.1829 15.6438C27.3409 16.0054 27.3894 16.4053 27.3224 16.794C27.2553 17.1828 27.0757 17.5434 26.8058 17.8313L2.93398 43.2184C2.70202 43.4662 2.40099 43.6387 2.06985 43.7135C1.7387 43.7884 1.3927 43.7622 1.07662 43.6383C0.760551 43.5144 0.488961 43.2986 0.297012 43.0187C0.105064 42.7389 0.00159475 42.4079 0 42.0686V42.0686C0 44.6587 2.09968 46.7584 4.68977 46.7584H55.1698C57.9313 46.7584 60.1698 44.5198 60.1698 41.7584V4.28028C60.1698 1.51886 57.9313 -0.719727 55.1698 -0.719727H4.76369ZM18.297 1.59641C18.1396 1.42755 18.0354 1.2162 17.9972 0.988633C17.9591 0.761063 17.9887 0.527307 18.0824 0.316417C18.1761 0.105528 18.3297 -0.073197 18.5242 -0.197543C18.7187 -0.321889 18.9455 -0.386374 19.1763 -0.382983H40.9415C41.1711 -0.38424 41.3961 -0.318396 41.5888 -0.193551C41.7814 -0.0687055 41.9334 0.109697 42.026 0.319715C42.1185 0.529733 42.1476 0.762208 42.1097 0.988546C42.0718 1.21488 41.9686 1.42522 41.8126 1.59367L32.5669 11.5153C32.2486 11.8553 31.8638 12.1264 31.4364 12.3117C31.009 12.497 30.5481 12.5926 30.0822 12.5926C29.6163 12.5926 29.1553 12.497 28.7279 12.3117C28.3005 12.1264 27.9158 11.8553 27.5975 11.5153L18.297 1.59641ZM40.9196 46.501C40.9196 46.498 40.9171 46.4955 40.914 46.4955H19.1544C18.9243 46.4973 18.6986 46.4316 18.5054 46.3066C18.3122 46.1817 18.1598 46.0029 18.0671 45.7923C17.9745 45.5817 17.9455 45.3487 17.984 45.1219C18.0224 44.8951 18.1264 44.6845 18.2833 44.5161L27.5208 34.5973C27.8391 34.2572 28.2238 33.9862 28.6512 33.8008C29.0786 33.6155 29.5396 33.5199 30.0055 33.5199C30.4714 33.5199 30.9323 33.6155 31.3597 33.8008C31.7871 33.9862 32.1719 34.2572 32.4902 34.5973L41.788 44.5216C41.9465 44.6896 42.052 44.9004 42.0916 45.1279C42.1311 45.3553 42.1028 45.5894 42.0103 45.8009C41.9177 46.0125 41.765 46.1921 41.5711 46.3176C41.3786 46.442 41.1541 46.5077 40.925 46.5065C40.922 46.5065 40.9196 46.5041 40.9196 46.501V46.501ZM60.0959 42.0686C60.0937 42.4073 59.99 42.7376 59.7982 43.0168C59.6064 43.2961 59.3353 43.5115 59.0198 43.6352C58.7043 43.759 58.3589 43.7854 58.0283 43.7111C57.6976 43.6368 57.3968 43.4652 57.1646 43.2184L47.7636 33.2486C46.8189 32.2467 45.5029 31.6788 44.1259 31.6788H34.7776C34.3827 31.6809 33.9957 31.5673 33.6646 31.3521C33.3335 31.1369 33.0727 30.8294 32.9145 30.4678C32.7563 30.1061 32.7075 29.706 32.7743 29.3169C32.841 28.9279 33.0204 28.5669 33.2901 28.2785L57.1537 2.90506C57.3851 2.65704 57.6857 2.48423 58.0166 2.40904C58.3475 2.33386 58.6933 2.35977 59.0093 2.48342C59.3252 2.60707 59.5967 2.82274 59.7885 3.10247C59.9803 3.3822 60.0836 3.71307 60.0849 4.05217L60.0959 42.0686Z"/>
+            </svg>
+            <p id="loading-message" class="text-text-secondary mt-4">Carregando plataforma...</p>
+        </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- CONTEÚDO PRINCIPAL DA APLICAÇÃO -->
+    <!-- ======================================================================= -->
+
+    <div id="calculator-content" style="display: none;">
+        <div class="content-wrapper">
+            <header class="mb-12 flex justify-between items-start relative stagger-in no-print" style="--stagger-index: 0;">
+                <div class="flex items-center gap-4">
+                    <svg class="w-14 h-auto flex-shrink-0" viewBox="0 0 59.7 45.9" xmlns="http://www.w3.org/2000/svg">
+                        <path class="logo-path" d="M4.76369 -0.719727C2.13278 -0.719727 0 1.41305 0 4.04396V4.04396C0.00217239 3.70526 0.105853 3.37498 0.297665 3.09573C0.489477 2.81649 0.760619 2.60109 1.07611 2.47733C1.3916 2.35357 1.73695 2.32713 2.06762 2.40142C2.39829 2.47571 2.6991 2.64732 2.93124 2.89411L12.335 12.8644C13.2797 13.866 14.5956 14.4337 15.9724 14.4337H25.321C25.7157 14.4314 26.1025 14.5448 26.4334 14.7599C26.7644 14.975 27.0249 15.2823 27.1829 15.6438C27.3409 16.0054 27.3894 16.4053 27.3224 16.794C27.2553 17.1828 27.0757 17.5434 26.8058 17.8313L2.93398 43.2184C2.70202 43.4662 2.40099 43.6387 2.06985 43.7135C1.7387 43.7884 1.3927 43.7622 1.07662 43.6383C0.760551 43.5144 0.488961 43.2986 0.297012 43.0187C0.105064 42.7389 0.00159475 42.4079 0 42.0686V42.0686C0 44.6587 2.09968 46.7584 4.68977 46.7584H55.1698C57.9313 46.7584 60.1698 44.5198 60.1698 41.7584V4.28028C60.1698 1.51886 57.9313 -0.719727 55.1698 -0.719727H4.76369ZM18.297 1.59641C18.1396 1.42755 18.0354 1.2162 17.9972 0.988633C17.9591 0.761063 17.9887 0.527307 18.0824 0.316417C18.1761 0.105528 18.3297 -0.073197 18.5242 -0.197543C18.7187 -0.321889 18.9455 -0.386374 19.1763 -0.382983H40.9415C41.1711 -0.38424 41.3961 -0.318396 41.5888 -0.193551C41.7814 -0.0687055 41.9334 0.109697 42.026 0.319715C42.1185 0.529733 42.1476 0.762208 42.1097 0.988546C42.0718 1.21488 41.9686 1.42522 41.8126 1.59367L32.5669 11.5153C32.2486 11.8553 31.8638 12.1264 31.4364 12.3117C31.009 12.497 30.5481 12.5926 30.0822 12.5926C29.6163 12.5926 29.1553 12.497 28.7279 12.3117C28.3005 12.1264 27.9158 11.8553 27.5975 11.5153L18.297 1.59641ZM40.9196 46.501C40.9196 46.498 40.9171 46.4955 40.914 46.4955H19.1544C18.9243 46.4973 18.6986 46.4316 18.5054 46.3066C18.3122 46.1817 18.1598 46.0029 18.0671 45.7923C17.9745 45.5817 17.9455 45.3487 17.984 45.1219C18.0224 44.8951 18.1264 44.6845 18.2833 44.5161L27.5208 34.5973C27.8391 34.2572 28.2238 33.9862 28.6512 33.8008C29.0786 33.6155 29.5396 33.5199 30.0055 33.5199C30.4714 33.5199 30.9323 33.6155 31.3597 33.8008C31.7871 33.9862 32.1719 34.2572 32.4902 34.5973L41.788 44.5216C41.9465 44.6896 42.052 44.9004 42.0916 45.1279C42.1311 45.3553 42.1028 45.5894 42.0103 45.8009C41.9177 46.0125 41.765 46.1921 41.5711 46.3176C41.3786 46.442 41.1541 46.5077 40.925 46.5065C40.922 46.5065 40.9196 46.5041 40.9196 46.501V46.501ZM60.0959 42.0686C60.0937 42.4073 59.99 42.7376 59.7982 43.0168C59.6064 43.2961 59.3353 43.5115 59.0198 43.6352C58.7043 43.759 58.3589 43.7854 58.0283 43.7111C57.6976 43.6368 57.3968 43.4652 57.1646 43.2184L47.7636 33.2486C46.8189 32.2467 45.5029 31.6788 44.1259 31.6788H34.7776C34.3827 31.6809 33.9957 31.5673 33.6646 31.3521C33.3335 31.1369 33.0727 30.8294 32.9145 30.4678C32.7563 30.1061 32.7075 29.706 32.7743 29.3169C32.841 28.9279 33.0204 28.5669 33.2901 28.2785L57.1537 2.90506C57.3851 2.65704 57.6857 2.48423 58.0166 2.40904C58.3475 2.33386 58.6933 2.35977 59.0093 2.48342C59.3252 2.60707 59.5967 2.82274 59.7885 3.10247C59.9803 3.3822 60.0836 3.71307 60.0849 4.05217L60.0959 42.0686Z"/>
+                    </svg>
+                    <div class="page-title"> 
+                        <h1 class="text-2xl font-regular text-text-primary "></h1> 
+                        <h5 class="text-1xl font-regular text-text-primary"></h5> 
+                    </div> 
+                </div> 
+                <button id="open-tutorial-button" class="btn btn-secondary !p-2.5 no-print" title="Abrir tutorial" aria-label="Abrir tutorial da plataforma">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </button>
+            </header>
+
+            <nav class="flex justify-center mb-12 no-print">
+                <div id="tour-step-1" class="tab-container">
+                    <div id="active-tab-slider"></div>
+                    <button id="main-tab-cambial" class="main-tab-button active">Envios e Retiradas</button>
+                    <button id="main-tab-ir" class="main-tab-button">Apuração Anual de Resultados</button>
+                    <button id="main-tab-wrapped" class="main-tab-button">XTRADERS REPORT</button>
+                </div>
+            </nav>
+
+            <main>
+                <div id="main-content-cambial" class="main-content">
+                    <section id="cambial-input-area" class="space-y-6 no-print">
+                        <div id="tour-step-2" class="card">
+                            <h3 class="text-lg font-semibold mb-4 text-text-primary">Adicionar Transação de Capital</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                                <div><label for="trans-date" class="block text-xs font-medium mb-1 text-text-secondary">Data</label><input type="date" id="trans-date" class="input-field h-12"></div>
+                                <div><label for="trans-type" class="block text-xs font-medium mb-1 text-text-secondary">Tipo</label><select id="trans-type" class="input-field h-12"><option value="Envio">Envio</option><option value="Retirada">Retirada</option><option value="Não Retirada" id="nao-retirada-option" disabled>Não Retirada</option></select></div>
+                                <div><label for="trans-value" class="block text-xs font-medium mb-1 text-text-secondary">Valor Líquido (USD)</label><input type="text" id="trans-value" placeholder="1.000,00" class="input-field h-12"></div>
+                                <div class="flex gap-2">
+                                    <button id="add-trans-button" class="btn btn-secondary w-full h-12">Adicionar +</button>
+                                    <button id="cancel-edit-button" class="btn btn-secondary w-full hidden h-12" style="border-color: var(--warning-color); color: var(--warning-color);">Cancelar</button>
+                                </div>
+                            </div>
+                            <div class="important-note">
+                                <p>MUITO IMPORTANTE:</p>
+                                <p class="mt-1 text-sm">NÃO CONSIDERAR OU INFORMAR RETIRADAS DE LUCRO COM OS SEUS TRADES NESTE CAMPO. AQUI DEVE-SE INFORMAR SOMENTE O CAPITAL ORIGINALMENTE ENVIADO OU RETIRADO DO EXTERIOR (MARGEM PARA OPERAR).</p>
+                            </div>
+                            <div id="transactions-list" class="mt-6"></div>
+                        </div>
+                        <div id="tour-step-4" class="text-center ">
+                            <button id="process-cambial-button" class="btn btn-primary text-base py-2 px-8">
+                             <span>Processar Dados</span>
+                            </button>
+                        </div>
+                    </section>
+
+                    <section id="results-area-cambial" class="transition-opacity duration-500 mt-12">
+                        <!-- O CONTEÚDO SERÁ INJETADO AQUI PELO JAVASCRIPT -->
+                    </section>
+                </div>
+
+                <div id="main-content-ir" class="main-content hidden">
+                    <section id="tour-step-5" class="card no-print">
+                        <h2 class="text-xl font-semibold mb-6 text-text-primary text-center">Apuração Anual de Resultados dos Trades</h2>
+                        <p class="text-center text-sm mb-6 -mt-4 text-text-secondary">Importe a Planilha de Trades realizados para calcular seus resultados e impostos devidos.</p>
+                        <div id="alert-box" class="hidden p-4 mb-6 text-sm rounded-lg" role="alert"></div>
+                        <div class="flex justify-center mb-8">
+                            <label for="trades-file" class="w-full md:w-1/1 flex flex-col justify-center items-center p-6 border-2 border-dashed border-border-color rounded-lg cursor-pointer hover:border-accent-primary transition-colors">
+                                <svg class="mx-auto h-12 w-12 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                                <span id="trades-file-name" class="mt-2 text-sm font-semibold text-text-primary">Relatório de Operações (.csv)</span>
+                            </label>
+                            <input type="file" id="trades-file" accept=".csv" class="hidden"/>
+                        </div>
+                        <div class="important-note mb-8">
+                            <p>MUITO IMPORTANTE:</p>
+                            <p class="mt-1 text-sm">Certifique-se de que o relatório está no formato CSV (separado por vírgula). Neste campo NÃO são considerados os envios e retiradas de capital (margem para operar).</p>
+                        </div>
+                        <div class="flex justify-center">
+                            <button id="process-button" class="btn btn-primary text-base py-2 px-8">
+                                <span id="button-text">Processar Dados</span>
+                                <div id="loader" class="loader !w-6 !h-6 hidden ml-3"></div>
+                            </button>
+                        </div>
+                    </section>
+
+                    <section id="results" class="hidden mt-12"></section>
+                </div>
+
+                <div id="main-content-wrapped" class="main-content hidden">
+                    <!-- O conteúdo do wrapped será inserido aqui pelo JavaScript -->
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <!-- ======================================================================= -->
+    <!-- ELEMENTOS FLUTUANTES E MODAIS -->
+    <!-- ======================================================================= -->
+
+    <div id="auth-container" style="display: none;" class="no-print">
+        <span id="user-email" class="text-text-primary text-sm font-medium"></span>
+        <button id="sign-out-button" class="text-xs text-negative-color hover:text-red transition-colors">Sair</button>
+    </div>
+
+    <div id="trades-modal" class="modal-overlay no-print">
+        <div class="modal-content !w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl px-2 sm:px-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modal-title" class="text-2xl font-bold text-text-primary"></h2>
+                <button id="close-modal-button" class="text-2xl text-text-secondary hover:text-text-primary transition-colors" aria-label=" Fechar modal">&times;</button>
+            </div>
+            <div class="overflow-x-auto rounded-lg border border-border-color" style="background: var(--surface-card, #f9fafb);">
+                <table class="min-w-[500px] w-full divide-y divide-border-color text-[8px] sm:text-sm md:text-base">
+                    <thead class="bg-surface-card/50">
+                        <tr>
+                            <th class="px-2 sm:px-4 py-3 text-left font-medium text-text-secondary uppercase tracking-wider whitespace-nowrap">Data</th>
+                            <th class="px-2 sm:px-4 py-3 text-left font-medium text-text-secondary uppercase tracking-wider whitespace-nowrap">Ativo</th>
+                            <th class="px-2 sm:px-4 py-3 text-right font-medium text-text-secondary uppercase tracking-wider whitespace-nowrap">Resultado (USD)</th>
+                            <th class="px-2 sm:px-4 py-3 text-right font-medium text-text-secondary uppercase tracking-wider whitespace-nowrap">Resultado (BRL)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modal-table-body" class="divide-y divide-border-color"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="tour-overlay" style="display: none;" class="no-print">
+        <div class="tour-highlight"></div>
+        <div class="tour-tooltip">
+             <h3 id="tour-title" class="text-xl font-bold mb-2 text-text-primary"></h3>
+             <p id="tour-text" class="text-base mb-4 text-text-secondary"></p>
+             <div class="tour-nav">
+                 <button id="tour-skip-btn" class="text-sm text-text-secondary hover:text-text-primary">Pular</button>
+                 <div class="flex items-center gap-3">
+                     <span id="tour-step-counter" class="text-sm text-text-secondary"></span>
+                     <button id="tour-prev-btn" class="btn btn-secondary !py-1.5 !px-3 !text-xs">Anterior</button>
+                     <button id="tour-next-btn" class="btn btn-primary !py-1.5 !px-3 !text-xs">Próximo</button>
+                 </div>
+             </div>
+        </div>
+    </div>
+
+    <div id="terms-modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="terms-text-container">
+                <h4>&gt;&gt; Termos Legais, Condições e Avisos &lt;&lt;</h4>
+                <p>Ao utilizar as planilhas, ferramentas, e ao fazer uso das informações contidas no projeto IR, o usuário confirma que leu, entendeu e aceitou os termos, condições e avisos aqui listados.</p>
+                <p><strong>17 -</strong> Qualquer cliente que esteja tendo dificuldades com a apuração nas planilhas, ferramentas e informações contidas no Projeto IR poderá solicitar auxílio da equipe responsável, que providenciará a resposta adequada, se possível, com a maior brevidade possível dentro do razoável. Caso o cliente, mesmo após a ajuda, não consiga apurar seu imposto corretamente.</p>
+            </div>
+            <div class="flex justify-end items-center gap-4 mt-auto pt-6 border-t border-border-color">
+                <button id="decline-terms-btn" class="btn btn-danger">Recusar e Sair</button>
+                <button id="accept-terms-btn" class="btn btn-primary">Li, entendi e aceito os termos</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="export-modal" class="modal-overlay no-print">
+        <div class="modal-content !w-[500px]">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="export-modal-title" class="text-2xl font-bold text-text-primary">Exportar Relatório</h2>
+                <button id="close-export-modal-btn" class="text-2xl text-text-secondary hover:text-text-primary transition-colors" aria-label=" Fechar modal de exportação">&times;</button>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <label for="export-format-select" class="block text-sm font-medium mb-2 text-text-secondary">Formato do Arquivo</label>
+                    <select id="export-format-select" class="input-field">
+                        <option value="pdf">PDF (.pdf)</option>
+                        <option value="xlsx">Excel (.xlsx)</option>
+                    </select>
+                </div>
+                <div>
+                    <p class="block text-sm font-medium mb-3 text-text-secondary">Conteúdo a Incluir</p>
+                    <div id="export-options-container" class="space-y-3"></div>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-border-color flex justify-end">
+                <button id="generate-export-btn" class="btn btn-primary">
+                    <span id="export-btn-text">Gerar e Baixar</span>
+                    <div id="export-loader" class="loader !w-5 !h-5 hidden ml-2"></div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="module">
+// --- INICIALIZAÇÃO DO FIREBASE ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB9yJzA2imAFsUjYGF7S7HzTA3kPNf6P7o",
+  authDomain: "calculadora-ir-56a2c.firebaseapp.com",
+  projectId: "calculadora-ir-56a2c",
+  storageBucket: "calculadora-ir-56a2c.appspot.com",
+  messagingSenderId: "613402077853",
+  appId: "1:613402077853:web:244d838cc2a99452288274"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+let renderFinalChart;
+
+// --- ELEMENTOS DO DOM ---
+const loginScreen = document.getElementById('login-screen');
+const registerScreen = document.getElementById('register-screen');
+const noAccessScreen = document.getElementById('no-access-screen');
+const logoutFromNoAccessBtn = document.getElementById('logout-from-no-access');
+const calculatorContent = document.getElementById('calculator-content');
+const authContainer = document.getElementById('auth-container');
+const userEmailDisplay = document.getElementById('user-email');
+const signOutButton = document.getElementById('sign-out-button');
+const emailInput = document.getElementById('email-input');
+const passwordInput = document.getElementById('password-input');
+const signInButton = document.getElementById('sign-in-button');
+const forgotPasswordLink = document.getElementById('forgot-password-link');
+const loginMessage = document.getElementById('login-message');
+const registerEmailInput = document.getElementById('register-email-input');
+const registerPasswordInput = document.getElementById('register-password-input');
+const registerConfirmPasswordInput = document.getElementById('register-confirm-password-input');
+const registerButton = document.getElementById('register-button');
+const registerMessage = document.getElementById('register-message');
+const goToRegisterLink = document.getElementById('go-to-register-link');
+const goToLoginLink = document.getElementById('go-to-login-link');
+const loadingOverlay = document.getElementById('loading-overlay');
+const loadingMessage = document.getElementById('loading-message');
+const termsModal = document.getElementById('terms-modal-overlay');
+const acceptTermsBtn = document.getElementById('accept-terms-btn');
+const declineTermsBtn = document.getElementById('decline-terms-btn');
+
+// --- LÓGICA DE VISIBILIDADE DA SENHA ---
+const eyeIcon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>`;
+const eyeSlashIcon = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29M7.532 7.532l3.29 3.29M3 3l18 18"></path></svg>`;
+
+function setupPasswordToggle(inputId, toggleId) {
+    const passwordField = document.getElementById(inputId);
+    const toggleButton = document.getElementById(toggleId);
+    if (passwordField && toggleButton) {
+        toggleButton.addEventListener('click', () => {
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                toggleButton.innerHTML = eyeSlashIcon;
+            } else {
+                passwordField.type = 'password';
+                toggleButton.innerHTML = eyeIcon;
+            }
+        });
+    }
+}
+setupPasswordToggle('password-input', 'toggle-login-password');
+setupPasswordToggle('register-password-input', 'toggle-register-password');
+setupPasswordToggle('register-confirm-password-input', 'toggle-confirm-password');
+
+// --- LÓGICA DE AUTENTICAÇÃO E VERIFICAÇÃO ---
+async function checkUserPaymentStatus(user) {
+    if (!user) return false;
+    const paymentsRef = collection(db, "payments");
+    const q = query(paymentsRef, where("buyerEmail", "==", user.email), where("status", "==", "paid"));
+    try {
+        const querySnapshot = await getDocs(q);
+        return !querySnapshot.empty;
+    } catch (error) {
+        console.error("Erro ao verificar o status do pagamento:", error);
+        return false;
+    }
+}
+
+function showMainApplication() {
+    console.log('Iniciando showMainApplication...');
+
+    if (loadingMessage) {
+        loadingMessage.textContent = 'Carregando plataforma...';
+    }
+
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'flex';
+        loadingOverlay.style.opacity = '1';
+    }
+
+    setTimeout(() => {
+        console.log('Fade out iniciando...');
+
+        if (loadingOverlay) {
+            loadingOverlay.style.opacity = '0';
+
+            // Define um timeout alternativo caso transitionend não funcione
+            const transitionTimeout = setTimeout(() => {
+                console.log('Timeout de transição ativado');
+                showMainContent();
+            }, 800);
+
+            // Escuta pelo fim da animação
+            loadingOverlay.addEventListener('transitionend', () => {
+                console.log('Transição finalizada');
+                clearTimeout(transitionTimeout);
+                showMainContent();
+            }, { once: true });
+        } else {
+            // Se não há overlay, mostra o conteúdo diretamente
+            showMainContent();
+        }
+    }, 1000);
+}
+
+function showMainContent() {
+    console.log('Mostrando conteúdo principal...');
+
+    // Esconde tela de carregamento
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'none';
+    }
+
+    // Mostra conteúdo principal
+    if (calculatorContent) {
+        calculatorContent.style.display = 'block';
+    }
+
+    if (authContainer) {
+        authContainer.style.display = 'flex';
+    }
+
+    document.body.style.overflow = 'auto';
+
+    // Aguarda o DOM se estabilizar antes de continuar
+    setTimeout(() => {
+        // Atualiza o slider da aba
+        if (typeof updateActiveTabSlider === 'function') {
+            updateActiveTabSlider();
+        }
+
+        // Inicia o tour se necessário
+        if (!localStorage.getItem('xtributationTutorialSeen') && typeof startTour === 'function') {
+            setTimeout(startTour, 300);
+        }
+
+        console.log('Aplicação carregada com sucesso!');
+    }, 100);
+}
+
+onAuthStateChanged(auth, async (user) => {
+    console.log('Estado de autenticação mudou:', user ? user.email : 'sem usuário');
+
+    if (user) {
+        console.log('Usuário autenticado, iniciando verificações...');
+        loginScreen.style.display = 'none';
+        registerScreen.style.display = 'none';
+        noAccessScreen.style.display = 'none';
+
+        if (userEmailDisplay) {
+            userEmailDisplay.textContent = user.email;
+        }
+
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'flex';
+        }
+
+        if (loadingMessage) {
+            loadingMessage.textContent = 'Verificando seu acesso...';
+        }
+
+        try {
+            const userDocRef = doc(db, "users", user.uid);
+            const docSnap = await getDoc(userDocRef);
+
+            console.log('Documento do usuário existe:', docSnap.exists());
+
+            if (docSnap.exists() && docSnap.data().termsAccepted) {
+                console.log('Termos aceitos, verificando pagamento...');
+                const hasActivePayment = await checkUserPaymentStatus(user);
+                console.log('Pagamento ativo:', hasActivePayment);
+
+                if (hasActivePayment) { 
+                    console.log('Iniciando aplicação principal...');
+                    showMainApplication(); 
+                } else { 
+                    console.log('Sem pagamento ativo, mostrando tela de acesso negado');
+                    if (loadingOverlay) loadingOverlay.style.display = 'none'; 
+                    if (noAccessScreen) noAccessScreen.style.display = 'flex'; 
+                }
+            } else {
+                console.log('Termos não aceitos, mostrando modal de termos');
+                if (loadingOverlay) loadingOverlay.style.display = 'none';
+                if (termsModal) termsModal.style.display = 'flex';
+            }
+        } catch (error) {
+            console.error("Erro no fluxo de verificação:", error);
+            alert("Ocorreu um erro ao verificar suas permissões. Tente novamente.");
+            signOut(auth);
+        }
+    } else {
+        console.log('Usuário não autenticado, mostrando tela de login');
+        if (loginScreen) loginScreen.style.display = 'flex';
+        if (registerScreen) registerScreen.style.display = 'none';
+        if (calculatorContent) calculatorContent.style.display = 'none';
+        if (authContainer) authContainer.style.display = 'none';
+        if (termsModal) termsModal.style.display = 'none';
+        if (noAccessScreen) noAccessScreen.style.display = 'none';
+        document.body.style.overflow = 'hidden';
+        if (loadingOverlay) { loadingOverlay.style.display = 'none'; }
+    }
+});
+
+// --- FUNÇÕES DE EVENTOS (Handlers) ---
+function handleSignIn() {
+    if (!emailInput || !passwordInput) {
+        console.error('Campos de email ou senha não encontrados');
+        return;
+    }
+
+    signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value).catch(error => {
+        if (loginMessage) {
+            loginMessage.textContent = `Erro: E-mail ou senha inválidos.`;
+            loginMessage.className = 'message error';
+            loginMessage.style.display = 'block';
+        }
+    });
+}
+
+function handleRegistration() {
+    if (registerPasswordInput.value !== registerConfirmPasswordInput.value) {
+        registerMessage.textContent = 'As senhas não coincidem.';
+        registerMessage.className = 'message error';
+        registerMessage.style.display = 'block';
+        return;
+    }
+    createUserWithEmailAndPassword(auth, registerEmailInput.value, registerPasswordInput.value).catch(error => {
+        let msg = 'Ocorreu um erro ao criar a conta.';
+        if (error.code === 'auth/email-already-in-use') msg = 'Este e-mail já está cadastrado.';
+        else if (error.code === 'auth/weak-password') msg = 'A senha deve ter pelo menos 6 caracteres.';
+        else if (error.code === 'auth/invalid-email') msg = 'O formato do e-mail é inválido.';
+        registerMessage.textContent = msg;
+        registerMessage.className = 'message error';
+        registerMessage.style.display = 'block';
+    });
+}
+
+function handlePasswordReset(e) {
+    e.preventDefault();
+    if (!emailInput.value) {
+        loginMessage.textContent = 'Por favor, insira seu e-mail para redefinir a senha.';
+        loginMessage.className = 'message error';
+        loginMessage.style.display = 'block';
+        return;
+    }
+    sendPasswordResetEmail(auth, emailInput.value)
+        .then(() => { loginMessage.textContent = 'E-mail de redefinição enviado!'; loginMessage.className = 'message success'; })
+        .catch(error => { loginMessage.textContent = `Erro ao enviar e-mail.`; loginMessage.className = 'message error'; });
+    loginMessage.style.display = 'block';
+}
+
+async function handleAcceptTerms() {
+    const currentUser = auth.currentUser;
+    if (!currentUser) return;
+    acceptTermsBtn.disabled = true;
+    acceptTermsBtn.textContent = 'Salvando...';
+    const userDocRef = doc(db, "users", currentUser.uid);
+    try {
+        await setDoc(userDocRef, { email: currentUser.email, termsAccepted: { version: "1.0", timestamp: new Date() } }, { merge: true });
+        termsModal.style.display = 'none';
+        loadingOverlay.style.display = 'flex';
+        loadingMessage.textContent = 'Verificando seu acesso...';
+        const hasActivePayment = await checkUserPaymentStatus(currentUser);
+        if (hasActivePayment) { showMainApplication(); } 
+        else { loadingOverlay.style.display = 'none'; noAccessScreen.style.display = 'flex'; }
+    } catch (error) {
+        alert("Ocorreu um erro ao salvar sua confirmação. Tente novamente.");
+    } finally {
+        acceptTermsBtn.disabled = false;
+        acceptTermsBtn.textContent = 'Li, entendi e aceito os termos';
+    }
+}
+
+// SUBSTITUA TODO O SEU BLOCO DE CÓDIGO DO TUTORIAL POR ESTE:
+
+const tourOverlay = document.getElementById('tour-overlay');
+const tourHighlight = document.querySelector('.tour-highlight');
+const tourTooltip = document.querySelector('.tour-tooltip');
+const tourTitle = document.getElementById('tour-title');
+const tourText = document.getElementById('tour-text');
+const tourStepCounter = document.getElementById('tour-step-counter');
+const tourPrevBtn = document.getElementById('tour-prev-btn');
+const tourNextBtn = document.getElementById('tour-next-btn');
+const tourSkipBtn = document.getElementById('tour-skip-btn');
+const openTutorialButton = document.getElementById('open-tutorial-button');
+
+// Usando o seu array de steps, que está correto para o seu HTML
+const tourSteps = [
+    { element: '#tour-step-1', title: 'Navegação Principal', intro: 'Alterne entre os dashboards para suas análises.' },
+    { element: '#tour-step-2', title: 'Adicionar Transações', intro: 'Preencha os dados de suas movimentações de capital (envios e retiradas).' },
+    { element: '#tour-step-4', title: 'Processar Análise', intro: 'Clique aqui para executar os cálculos após preencher os dados acima.' },
+    { element: '#main-tab-ir', title: 'Análise de IR', intro: 'Mude para este dashboard para analisar o imposto sobre suas operações de trade.' },
+    { element: '#tour-step-5', title: 'Relatório de Operações', intro: 'Importe seu relatório da corretora para o cálculo do IR.' }
+];
+let currentStep = 0;
+
+function startTour() { 
+    currentStep = 0; 
+    tourOverlay.style.display = 'block'; 
+    // Pequeno delay para o display:block ser aplicado antes de iniciar a animação
+    setTimeout(() => {
+        showStep(currentStep)
+        tourOverlay.classList.add('active'); 
+    }, 50); 
+    localStorage.setItem('xtributationTutorialSeen', 'true'); 
+}
+
+function endTour() { 
+    tourOverlay.classList.remove('active'); 
+    // Espera a animação de fade-out terminar para esconder o elemento
+    setTimeout(() => {
+        tourOverlay.style.display = 'none';
+    }, 300); 
+}
+
+function showStep(index) {
+    const step = tourSteps[index];
+    const targetElement = document.querySelector(step.element);
+
+    if (!targetElement) { 
+        console.warn("Elemento do tour não encontrado:", step.element);
+        endTour(); 
+        return; 
+    }
+
+    // Garante que a aba correta está visível ANTES de medir a posição
+    if (step.element.includes('ir') || step.element.includes('tour-step-5')) { 
+        showMainTab('ir'); 
+    } else { 
+        showMainTab('cambial'); 
+    }
+
+    // Rola o elemento para a vista
+    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
+
+    // Espera a rolagem e a troca de aba terminarem antes de calcular a posição
+    setTimeout(() => {
+        const rect = targetElement.getBoundingClientRect();
+
+        // --- MELHORIAS VISUAIS APLICADAS AQUI ---
+
+        // 1. Define um espaçamento (padding) maior para o destaque.
+        const highlightPadding = 15; // Você pode ajustar este valor (ex: 10, 20)
+
+        // Posiciona o destaque com o novo espaçamento
+        tourHighlight.style.width = `${rect.width + (highlightPadding * 2)}px`;
+        tourHighlight.style.height = `${rect.height + (highlightPadding * 2)}px`;
+        tourHighlight.style.top = `${rect.top - highlightPadding}px`;
+        tourHighlight.style.left = `${rect.left - highlightPadding}px`;
+
+        // 2. Copia o arredondamento da borda do elemento alvo para o destaque
+        tourHighlight.style.borderRadius = window.getComputedStyle(targetElement).borderRadius;
+
+        // --- FIM DAS MELHORIAS VISUAIS ---
+
+        // Atualiza o texto do tooltip
+        tourTitle.textContent = step.title;
+        tourText.textContent = step.intro;
+        tourStepCounter.textContent = `${index + 1} / ${tourSteps.length}`;
+
+        // Lógica inteligente para posicionar o tooltip
+        const tooltipHeight = tourTooltip.offsetHeight;
+        const tooltipWidth = tourTooltip.offsetWidth;
+        if ((rect.bottom + tooltipHeight + 20) > window.innerHeight) { 
+            tourTooltip.style.top = `${rect.top - tooltipHeight - 15}px`; 
+        } else { 
+            tourTooltip.style.top = `${rect.bottom + 15}px`; 
+        }
+
+        // Centraliza o tooltip horizontalmente
+        let tooltipLeft = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+        if (tooltipLeft < 20) tooltipLeft = 20;
+        if (tooltipLeft + tooltipWidth > window.innerWidth - 20) tooltipLeft = window.innerWidth - tooltipWidth - 20;
+        tourTooltip.style.left = `${tooltipLeft}px`;
+
+        // Atualiza os botões de navegação
+        tourPrevBtn.style.display = index === 0 ? 'none' : 'inline-flex';
+        tourNextBtn.textContent = index === tourSteps.length - 1 ? 'Finalizar' : 'Próximo';
+
+    }, 400); 
+}
+
+// Listeners para os botões do tour
+if (tourNextBtn) {
+    tourNextBtn.addEventListener('click', () => { 
+        if (currentStep < tourSteps.length - 1) { 
+            currentStep++; 
+            showStep(currentStep); 
+        } else { 
+            endTour(); 
+        } 
+    });
+}
+
+if (tourPrevBtn) {
+    tourPrevBtn.addEventListener('click', () => { 
+        if (currentStep > 0) { 
+            currentStep--; 
+            showStep(currentStep); 
+        } 
+    });
+}
+
+if (tourSkipBtn) {
+    tourSkipBtn.addEventListener('click', endTour);
+}
+
+if (tourOverlay) {
+    tourOverlay.addEventListener('click', (e) => { 
+        if (e.target === tourOverlay) {
+            endTour(); 
+        }
+    });
+}
+
+// === INICIALIZAÇÃO DOS EVENT LISTENERS ===
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM carregado, inicializando event listeners...');
+
+    // Event listeners para login
+    if (signInButton) {
+        signInButton.addEventListener('click', handleSignIn);
+    }
+
+    if (registerButton) {
+        registerButton.addEventListener('click', handleRegistration);
+    }
+
+    if (forgotPasswordLink) {
+        forgotPasswordLink.addEventListener('click', handlePasswordReset);
+    }
+
+    if (goToRegisterLink) {
+        goToRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginScreen.style.display = 'none';
+            registerScreen.style.display = 'flex';
+        });
+    }
+
+    if (goToLoginLink) {
+        goToLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerScreen.style.display = 'none';
+            loginScreen.style.display = 'flex';
+        });
+    }
+
+    if (acceptTermsBtn) {
+        acceptTermsBtn.addEventListener('click', handleAcceptTerms);
+    }
+
+    if (declineTermsBtn) {
+        declineTermsBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+    }
+
+    if (signOutButton) {
+        signOutButton.addEventListener('click', () => {
+            signOut(auth);
+        });
+    }
+
+    if (logoutFromNoAccessBtn) {
+        logoutFromNoAccessBtn.addEventListener('click', () => {
+            signOut(auth);
+        });
+    }
+
+    // Event listeners para tabs principais
+    const mainTabButtons = document.querySelectorAll('.main-tab-button');
+    mainTabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const tabName = button.id.replace('main-tab-', '');
+            showMainTab(tabName);
+        });
+    });
+
+    // Event listeners para funcionalidades cambiais
+    if (document.getElementById('add-trans-button')) {
+        document.getElementById('add-trans-button').addEventListener('click', handleSaveTransaction);
+    }
+
+    if (document.getElementById('cancel-edit-button')) {
+        document.getElementById('cancel-edit-button').addEventListener('click', cancelEdit);
+    }
+
+    if (document.getElementById('process-cambial-button')) {
+        document.getElementById('process-cambial-button').addEventListener('click', handleProcessCambial);
+    }
+
+    // Event listeners para IR
+    if (tradesFileInput_IR) {
+        tradesFileInput_IR.addEventListener('change', handleFileSelect_IR);
+    }
+
+    if (processButton_IR) {
+        processButton_IR.addEventListener('click', processFiles_IR);
+    }
+
+    console.log('Event listeners inicializados com sucesso!');
+});
+
+function updateActiveTabSlider() {
+    const slider = document.getElementById('active-tab-slider');
+    const activeButton = document.querySelector('.main-tab-button.active');
+
+    if (slider && activeButton) {
+        slider.style.width = `${activeButton.offsetWidth}px`;
+        slider.style.left = `${activeButton.offsetLeft}px`;
+    }
+}
+
+function showMainTab(tabName) {
+    document.querySelectorAll('.main-content').forEach(content => content.classList.add('hidden'));
+    document.querySelectorAll('.main-tab-button').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(`main-content-${tabName}`).classList.remove('hidden');
+    document.getElementById(`main-tab-${tabName}`).classList.add('active');
+    updateActiveTabSlider();
+}
+
+
+function showLoader(containerId, message = "Processando...") {
+     document.getElementById(containerId).innerHTML = `<div class="flex justify-center items-center p-10"><div class="loader"></div><span class="ml-4 text-text-secondary">${message}</span></div>`;
+}
+function showError(containerId, message) {
+    document.getElementById(containerId).innerHTML = `<div class="message error" style="display:block;"><p class="font-bold">ERRO</p><p>${message}</p></div>`;
+}
+function formatCurrency(value, currency = 'BRL', digits = 2) {
+    if (typeof value !== 'number' || isNaN(value)) return formatCurrency(0, currency, digits);
+    return new Intl.NumberFormat(currency === 'BRL' ? 'pt-BR' : 'en-US', { style: 'currency', currency: currency, minimumFractionDigits: digits }).format(value);
+}
+function formatCurrencyWithColor(value) {
+    const formattedValue = formatCurrency(value, 'BRL');
+    if (value > 0) return `<span class="text-positive font-semibold">${formattedValue}</span>`;
+    if (value < 0) return `<span class="text-negative font-semibold">${formattedValue}</span>`;
+    return `<span>${formattedValue}</span>`;
+}
+
+// =======================================================================
+// LÓGICA DE API - BANCO CENTRAL
+// =======================================================================
+let ratesMapVenda = new Map();
+let ratesMapCompra = new Map();
+
+async function fetchBcbRateForDate(isoDate) {
+    if (ratesMapCompra.has(isoDate)) {
+        return; // Já temos a cotação, não faz nada
+    }
+
+    let searchDate = new Date(`${isoDate}T12:00:00Z`); // Usar meio-dia para evitar problemas de fuso
+
+    for (let i = 0; i < 7; i++) { // Tenta buscar por até 7 dias para trás
+        const currentIsoDate = searchDate.toISOString().split('T')[0];
+        const [year, month, day] = currentIsoDate.split('-');
+        const apiDate = `${month}-${day}-${year}`;
+        const url = `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${apiDate}'&$format=json`;
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                // Se a API falhar para um dia (ex: 404 para fds), continua o loop
+                if(response.status === 404) {
+                    searchDate.setUTCDate(searchDate.getUTCDate() - 1);
+                    continue;
+                }
+                throw new Error(`Erro na API do BCB. Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data.value && data.value.length > 0) {
+                const item = data.value[0];
+                ratesMapCompra.set(isoDate, item.cotacaoCompra);
+                ratesMapVenda.set(isoDate, item.cotacaoVenda);
+                return; // Sucesso, encontrou a cotação
+            } else {
+                // Dia sem cotação (feriado/fds), tenta o dia anterior
+                searchDate.setUTCDate(searchDate.getUTCDate() - 1);
+            }
+        } catch (error) {
+             console.error(`Falha ao buscar cotações do BCB para ${apiDate}:`, error);
+             // Se houver um erro de rede, por exemplo, para a busca para essa data
+             throw error;
+        }
+    }
+    // Se sair do loop sem encontrar, a cotação não foi encontrada nos últimos 7 dias
+    console.warn(`Nenhuma cotação encontrada no BCB para a data ${isoDate} ou nos 6 dias anteriores.`);
+}
+
+// =======================================================================
+// DASHBOARD CAMBIAL (ABA 1) - LÓGICA
+// =======================================================================
+let manualTransactions = [];
+let currentlyEditingIndex = null;
+let cambialExportData = [];
+let cambialKpiData = {};
+
+function getRateForDate(date, transType) {
+    const isoDate = date.toISOString().split('T')[0];
+    const ratesMap = transType === 'Envio' ? ratesMapVenda : ratesMapCompra;
+    return ratesMap.get(isoDate) || null;
+}
+
+function toggleNaoRetiradaOption() {
+    const dateInput = document.getElementById('trans-date');
+    const naoRetiradaOption = document.getElementById('nao-retirada-option');
+    const typeSelect = document.getElementById('trans-type');
+    const dateValue = dateInput.value;
+    if (dateValue && dateValue.substring(5) === '12-31') {
+        naoRetiradaOption.disabled = false;
+    } else {
+        naoRetiradaOption.disabled = true;
+        if (typeSelect.value === 'Não Retirada') typeSelect.value = 'Envio';
+    }
+}
+document.getElementById('trans-date').addEventListener('change', toggleNaoRetiradaOption);
+
+// CORRIGIDO: handleSaveTransaction
+async function handleSaveTransaction() {
+    const dateInput = document.getElementById('trans-date');
+    const typeInput = document.getElementById('trans-type');
+    const valueInput = document.getElementById('trans-value');
+    const dateValue = dateInput.value; 
+
+    if (!dateValue) {
+        alert('Por favor, preencha a data.');
+        return;
+    }
+
+    const validationDate = new Date(`${dateValue}T00:00:00Z`);
+    const today = new Date();
+    today.setUTCHours(0, 0, 0, 0);
+
+    if (validationDate > today) {
+        alert('A data não pode ser futura.');
+        return;
+    }
+
+    const sanitizedValue = valueInput.value.replace(/\./g, '').replace(',', '.');
+    const numericValue = parseFloat(sanitizedValue);
+
+    if (isNaN(numericValue) || numericValue <= 0) {
+        alert('Por favor, preencha um valor positivo válido no formato 1.000,00.');
+        return;
+    }
+
+    // Validação da primeira transação
+    if (manualTransactions.length === 0 && (typeInput.value === 'Retirada' || typeInput.value === 'Não Retirada')) {
+        alert('O primeiro lançamento deve ser obrigatoriamente um ENVIO.'); 
+        return;
+    }
+
+    const transactionData = { date: validationDate, type: typeInput.value, value: numericValue };
+
+    if (currentlyEditingIndex !== null) {
+        manualTransactions[currentlyEditingIndex] = transactionData;
+    } else {
+        manualTransactions.push(transactionData);
+    }
+
+    manualTransactions.sort((a, b) => a.date - b.date);
+
+    try {
+        await fetchBcbRateForDate(validationDate.toISOString().split('T')[0]);
+        renderTransactionsTable();
+        cancelEdit();
+    } catch (error) {
+        alert(`Não foi possível buscar a cotação do dólar. Verifique sua conexão. Erro: ${error.message}`);
+    }
+}
+
+
+function editTransaction(index) {
+    currentlyEditingIndex = index;
+    const trans = manualTransactions[index];
+    document.getElementById('trans-date').value = trans.date.toISOString().split('T')[0];
+    document.getElementById('trans-type').value = trans.type;
+    document.getElementById('trans-value').value = new Intl.NumberFormat('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2}).format(trans.value);
+    document.getElementById('add-trans-button').textContent = 'Salvar Alterações';
+    document.getElementById('cancel-edit-button').classList.remove('hidden');
+    toggleNaoRetiradaOption();
+}
+
+function cancelEdit() {
+    currentlyEditingIndex = null;
+    document.getElementById('trans-date').value = '';
+    document.getElementById('trans-type').value = 'Envio';
+    document.getElementById('trans-value').value = '';
+    document.getElementById('add-trans-button').textContent = 'Adicionar +';
+    document.getElementById('cancel-edit-button').classList.add('hidden');
+    toggleNaoRetiradaOption();
+}
+
+function removeTransaction(index) {
+    if (confirm('Tem certeza que deseja remover este registro?')) {
+        manualTransactions.splice(index, 1);
+        renderTransactionsTable();
+    }
+}
+
+function renderTransactionsTable() {
+    const container = document.getElementById('transactions-list');
+    if (manualTransactions.length === 0) { container.innerHTML = ''; return; }
+    const headers = ['Data', 'Tipo', 'Valor (USD)', 'Cotação (BRL)', 'Total (R$)', 'Ações'];
+    const data = manualTransactions.map((t, index) => {
+        const cotacaoDia = getRateForDate(t.date, t.type);
+        const cotacaoDisplay = cotacaoDia ? formatCurrency(cotacaoDia, 'BRL') : `<span class="text-xs text-text-secondary">Automático</span>`;
+        const totalBRL = cotacaoDia ? t.value * cotacaoDia : null;
+        const totalBRLDisplay = totalBRL !== null ? formatCurrency(totalBRL, 'BRL') : `<span class="text-xs text-text-secondary">---</span>`;
+        const actions = `<div class="flex gap-3 justify-center">
+            <button onclick="editTransaction(${index})" class="table-icon-button" title="Editar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button onclick="removeTransaction(${index})" class="table-icon-button" title="Remover">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+        </div>`;
+        return [t.date.toLocaleDateString('pt-BR', {timeZone: 'UTC'}), t.type, formatCurrency(t.value, 'USD'), cotacaoDisplay, totalBRLDisplay, actions];
+    });
+    let tableHTML = `<h4 class="text-md font-semibold mb-2 mt-4 border-t border-border-color pt-4">Registros a Processar:</h4>
+                    <div class="overflow-x-auto bg-bg-primary rounded-md border border-border-color">
+                        <table class="min-w-full text-sm">
+                            <thead><tr>${headers.map(h => `<th class="text-center py-2 px-3 font-medium text-text-secondary uppercase tracking-wider">${h}</th>`).join('')}</tr></thead>
+                            <tbody class="divide-y divide-border-color">${data.map(row => `<tr>${row.map(cell => `<td class="py-2 px-3 whitespace-nowrap text-center">${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+                        </table>
+                    </div>`;
+    container.innerHTML = tableHTML;
+}
+
+async function handleProcessCambial() {
+    showLoader('results-area-cambial', 'Analisando transações...');
+    if (manualTransactions.length === 0) {
+        showError('results-area-cambial', 'Nenhum registro foi adicionado.');
+        return;
+    }
+
+    try {
+        // Garantir que todas as cotações foram buscadas
+        const allDates = [...new Set(manualTransactions.map(t => t.date.toISOString().split('T')[0]))];
+        await Promise.all(allDates.map(date => fetchBcbRateForDate(date)));
+
+        processAndRenderCambial(manualTransactions);
+    } catch (error) {
+        showError('results-area-cambial', `Ocorreu um erro: ${error.message}`);
+        console.error(error);
+    }
+}
+
+// CORRIGIDO: processAndRenderCambial
+function processAndRenderCambial(transactions) {
+    try {
+        let saldoUSD = 0, custoSaldoBRL = 0, totalEnviosUSD = 0, totalRetiradoUSD = 0, lucroPrejuizoTotal = 0;
+        let totalEnviosBRL = 0, totalRetiradoBRL = 0;
+        let lucroTributavel = 0;
+        let valorNaoRetiradaBRL = null;
+        let mostrarAlocarCard = false;
+
+        const detailedData = [];
+        const detailedDataForExport = [];
+        const exportHeaders = ['Data', 'Tipo', 'Valor (USD)', 'Cotação (BRL)', 'Valor (BRL)', 'Lucro/Prejuízo Cambial (BRL)', 'Saldo Final (USD)'];
+
+        for (const trans of transactions) {
+            const cotacaoDia = getRateForDate(trans.date, trans.type);
+            if (cotacaoDia === null) throw new Error(`Cotação não encontrada para a data ${trans.date.toLocaleDateString('pt-BR', {timeZone:'UTC'})}. Verifique sua conexão e tente novamente.`);
+
+            const valorDeMercadoBRL = trans.value * cotacaoDia;
+            const precoMedioAnterior = saldoUSD > 1e-6 ? custoSaldoBRL / saldoUSD : 0;
+            let custoOperacaoBRL = 0, lucroPrejuizoRow = 0;
+
+            if (trans.type === 'Envio') {
+                saldoUSD += trans.value;
+                custoSaldoBRL += valorDeMercadoBRL;
+                totalEnviosUSD += trans.value;
+                totalEnviosBRL += valorDeMercadoBRL;
+            } else { 
+                if (trans.value > saldoUSD) throw new Error(`Saque (${formatCurrency(trans.value, 'USD')}) maior que o saldo na data.`);
+                custoOperacaoBRL = trans.value * precoMedioAnterior;
+                lucroPrejuizoRow = valorDeMercadoBRL - custoOperacaoBRL;
+                lucroPrejuizoTotal += lucroPrejuizoRow;
+                if (trans.type === 'Retirada' && lucroPrejuizoRow > 0) {
+                    lucroTributavel += lucroPrejuizoRow;
+                }
+                if (trans.type === 'Não Retirada') {
+                    custoSaldoBRL += (2 * lucroPrejuizoRow);
+                    valorNaoRetiradaBRL = valorDeMercadoBRL;
+                    if (trans.date.getUTCMonth() === 11 && trans.date.getUTCDate() === 31) {
+                        mostrarAlocarCard = true;
+                    }
+                } else { 
+                    totalRetiradoUSD += trans.value;
+                    totalRetiradoBRL += valorDeMercadoBRL;
+                    saldoUSD -= trans.value;
+                    custoSaldoBRL -= custoOperacaoBRL;
+                }
+            }
+            const dateLabel = trans.date.toLocaleDateString('pt-BR', {timeZone: 'UTC'});
+            detailedData.push([dateLabel, trans.type, formatCurrency(trans.value, 'USD'), formatCurrency(cotacaoDia, 'BRL'), formatCurrency(valorDeMercadoBRL, 'BRL'), formatCurrencyWithColor(lucroPrejuizoRow), formatCurrency(saldoUSD, 'USD')]);
+            detailedDataForExport.push({ 'Data': dateLabel, 'Tipo': trans.type, 'Valor (USD)': trans.value, 'Cotação (BRL)': cotacaoDia, 'Valor (BRL)': valorDeMercadoBRL, 'Lucro/Prejuízo Cambial (BRL)': lucroPrejuizoRow, 'Saldo Final (USD)': saldoUSD });
+        }
+
+        cambialExportData = { headers: exportHeaders, data: detailedDataForExport };
+        const impostoDevido = lucroTributavel * 0.15;
+        const saldoBRLCalculado = custoSaldoBRL + lucroPrejuizoTotal;
+        let saldoFinalParaExibir = (valorNaoRetiradaBRL !== null) ? valorNaoRetiradaBRL : (saldoUSD < 1e-6 ? 0 : saldoBRLCalculado);
+
+        cambialKpiData = { saldoUSD, custoSaldoBRL: saldoFinalParaExibir, totalEnviosUSD, totalRetiradoUSD, totalEnviosBRL, totalRetiradoBRL, lucroPrejuizoTotal, lucroTributavel, impostoDevido };
+        const resultsContainer = document.getElementById('results-area-cambial');
+
+        const kpiCards = [];
+        if (mostrarAlocarCard) {
+            kpiCards.push({ title: 'Alocar para Próximo Ano', value: formatCurrency(saldoFinalParaExibir), color: 'text-accent-primary', span: 'full' });
+        }
+        const corNaoIsenta = lucroTributavel >= 0 ? 'text-positive' : 'text-negative';
+
+        kpiCards.push({ title: 'Variação Cambial Total', value: formatCurrency(lucroPrejuizoTotal), color: lucroPrejuizoTotal >= 0 ? 'text-positive' : 'text-negative' });
+        kpiCards.push({ title: 'Variação Cambial Não Isenta', value: formatCurrency(lucroTributavel), color: corNaoIsenta });
+        kpiCards.push({ title: 'Imposto a Pagar (15%)', value: formatCurrency(impostoDevido), color: 'text-negative' });
+        kpiCards.push({ title: 'Total Enviado (USD)', value: formatCurrency(totalEnviosUSD, 'USD'), color: 'text-text-primary'});
+        kpiCards.push({ title: 'Total Retirado (USD)', value: formatCurrency(totalRetiradoUSD, 'USD'), color: 'text-text-primary'});
+        kpiCards.push({ title: 'Saldo Atual (USD)', value: formatCurrency(saldoUSD, 'USD'), color: 'text-text-primary'});
+        kpiCards.push({ title: 'Total Enviado (BRL)', value: formatCurrency(totalEnviosBRL), color: 'text-text-primary'});
+        kpiCards.push({ title: 'Total Retirado (BRL)', value: formatCurrency(totalRetiradoBRL), color: 'text-text-primary'});
+        kpiCards.push({ title: 'Saldo Atual (BRL)', value: formatCurrency(saldoFinalParaExibir), color: 'text-accent-primary' });
+
+        const kpiGridClass = 'grid grid-cols-1 md:grid-cols-3 gap-4';
+        const kpiCardsHtml = kpiCards.map(kpi => {
+            const cardClass = kpi.span === 'full' ? 'kpi-card md:col-span-3' : 'kpi-card';
+            return `<div class="${cardClass}"><p class="kpi-card-title">${kpi.title}</p><p class="kpi-card-value ${kpi.color}">${kpi.value}</p></div>`
+        }).join('');
+
+        resultsContainer.innerHTML = `
+            <div id="pdf-export-cambial" class="space-y-6">
+                <h3 class="text-xl font-bold text-text-primary text-left">Resumo da Movimentação Cambial</h3>
+                <div class="${kpiGridClass}">${kpiCardsHtml}</div>
+                <div class="card">
+                    <h3 class="text-xl font-bold mb-2 text-left">Extrato Detalhado</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full">
+                            <thead class="border-b border-border-color">
+                                <tr>${exportHeaders.map(h => `<th class="text-center py-3 px-4 font-semibold text-sm text-text-secondary uppercase tracking-wider">${h}</th>`).join('')}</tr>
+                            </thead>
+                            <tbody class="divide-y divide-border-color">
+                                ${detailedData.map(row => `<tr>${row.map(cell => `<td class="text-center py-4 px-4 whitespace-nowrap">${cell}</td>`).join('')}</tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-center mt-8 no-print">
+                <button id="open-export-modal-cambial-btn" class="btn btn-secondary">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>Exportar Relatório</span>
+                </button>
+            </div>`;
+        document.getElementById('open-export-modal-cambial-btn').addEventListener('click', () => openExportModal('cambial'));
+
+    } catch (e) { 
+        showError('results-area-cambial', `Ocorreu um erro crítico no processamento: ${e.message}`); 
+        console.error(e); 
+    }
+}
+
+// =======================================================================
+// Apuração Anual de Resultados (ABA 2) - LÓGICA
+// =======================================================================
+let tradesData_IR = null; let finalReportData_IR = null; let allProcessedTrades_IR = []; let irKpiData = {};
+const tradesFileInput_IR = document.getElementById('trades-file');
+const processButton_IR = document.getElementById('process-button');
+const resultsSection_IR = document.getElementById('results');
+const alertBox_IR = document.getElementById('alert-box');
+const loader_IR = document.getElementById('loader');
+const buttonText_IR = document.getElementById('button-text');
+const modal_IR = document.getElementById('trades-modal');
+const closeModalButton_IR = document.getElementById('close-modal-button');
+const openExportModalIrBtn = document.getElementById('open-export-modal-ir-btn');
+
+function closeTradesModal_IR() {
+    if (modal_IR) {
+        modal_IR.classList.remove('active');
+    }
+}
+
+function handleFileSelect_IR(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const nameEl = document.getElementById('trades-file-name');
+    nameEl.textContent = file.name;
+    nameEl.classList.add('text-accent-primary');
+
+    Papa.parse(file, {
+        header: false,
+        skipEmptyLines: true,
+        complete: (results) => {
+            let dataRows = results.data;
+            if (dataRows.length > 1 && dataRows[0][0] && dataRows[0][0].toLowerCase().includes('posi')) dataRows.shift();
+            const headers = dataRows[0].map(h => h.trim());
+            const records = dataRows.slice(1);
+            tradesData_IR = records.map(row => {
+                const obj = {};
+                headers.forEach((header, i) => { if (header) obj[header] = row[i]; });
+                return obj;
+            }).filter(row => Object.values(row).some(val => val !== null && val.toString().trim() !== ''));
+        },
+        error: (error) => showError('results', `Erro ao ler o arquivo ${file.name}: ${error.message}`)
+    });
+}
+
+async function processFiles_IR() {
+    if (!tradesData_IR) {
+        showError('results', 'Por favor, carregue o arquivo de operações para continuar.');
+        return;
+    }
+    loader_IR.classList.remove('hidden');
+    buttonText_IR.textContent = 'Processando...';
+    processButton_IR.disabled = true;
+
+    try {
+        const uniqueDates = [...new Set(tradesData_IR.map(t => {
+            const dateStr = (t['Horário'] || t['Datade  Fechamento'] || t['Time'] || t['Close Time'] || ' ').split(' ')[0];
+            if (!dateStr) return null;
+            if (dateStr.includes('/')) {
+                const [day, month, year] = dateStr.split('/');
+                return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            }
+            if (dateStr.includes('.')) {
+                const [year, month, day] = dateStr.split('.');
+                return `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+            }
+            return new Date(dateStr + 'T00:00:00Z').toISOString().split('T')[0];
+        }))].filter(d => d && !isNaN(new Date(d).getTime()));
+
+        if (uniqueDates.length === 0) throw new Error("Não foram encontradas datas válidas no arquivo de operações.");
+
+        await Promise.all(uniqueDates.map(date => fetchBcbRateForDate(date)));
+
+        const { apuracaoMensal, plataforma, processedTrades, impostoAnual } = apurarImposto_IR(tradesData_IR, ratesMapCompra);
+        finalReportData_IR = apuracaoMensal;
+        allProcessedTrades_IR = processedTrades;
+        displayResults_IR(apuracaoMensal, plataforma, impostoAnual);
+
+    } catch (error) {
+        showError('results', `Ocorreu um erro no cálculo: ${error.message}.`);
+        console.error(error);
+    } finally {
+        loader_IR.classList.add('hidden');
+        buttonText_IR.textContent = 'Processar Dados';
+        processButton_IR.disabled = false;
+    }
+}
+
+function identifyPlatform_IR(data) {
+    if (!data || data.length === 0) throw new Error("O arquivo de operações está vazio.");
+    const columns = new Set(Object.keys(data[0]).map(c => c.toLowerCase().trim().replace(/\s+/g, ' ')));
+    if (columns.has('position') && columns.has('ativo') && columns.has('horário') && columns.has('lucro')) return { name: 'Metatrader 5 (Posições)', map: { data_fechamento: 'Horário', resultado: 'Lucro', comissao: 'Comissão', swap: 'Swap', ativo: 'Ativo' } };
+    if (columns.has('n. do trade') && columns.has('datade fechamento')) return { name: 'Metatrader 5 (Negócios)', map: { data_fechamento: 'Datade  Fechamento', resultado: 'Resultado', comissao: 'Comissão', swap: 'Swap', ativo: 'Ativo' } };
+    if (columns.has('position') && columns.has('type') && columns.has('deal')) return { name: 'Metatrader 5 (Inglês)', map: { data_fechamento: 'Time', resultado: 'Profit', comissao: 'Commission', swap: 'Swap', ativo: 'Symbol' } };
+    if (columns.has('ticket') && columns.has('open time') && columns.has('close time')) return { name: 'Metatrader 4', map: { data_fechamento: 'Close Time', resultado: 'Profit', comissao: 'Commission', swap: 'Swap', ativo: 'Item' } };
+    if (columns.has('tradeid') && columns.has('direction') && columns.has('close time')) return { name: 'CTrader', map: { data_fechamento: 'Close Time', resultado: 'Net Profit', comissao: 'Commissions', swap: 'Swap', ativo: 'Symbol' } };
+    return null;
+}
+
+function apurarImposto_IR(trades, quotesMap) {
+    const platformInfo = identifyPlatform_IR(trades); if (!platformInfo) throw new Error("Plataforma de trading não identificada.");
+    const normalize = (obj, map) => { const newObj = {}; for (const key in obj) { const nKey = key.toLowerCase().trim().replace(/\s+/g, ' '); const sKey = Object.keys(map).find(k => map[k].toLowerCase().trim().replace(/\s+/g, ' ') === nKey); if (sKey) newObj[sKey] = obj[key]; else newObj[key.toLowerCase().trim().replace(/\s+/g, '_')] = obj[key]; } return newObj; };
+    let processedTrades = trades.map(t => normalize(t, platformInfo.map));
+
+    if (quotesMap.size === 0) throw new Error("O mapa de cotações está vazio.");
+
+    processedTrades = processedTrades.map(trade => { const parseCurrency = (v) => parseFloat(String(v||'0').replace(/\s/g, '').replace(',', '.'))||0; const resultado_liquido_usd = parseCurrency(trade.resultado); let date; const dateStr = (trade.data_fechamento||'').split(' ')[0]; if (dateStr.includes('/')) { const p = dateStr.split('/'); date = new Date(Date.UTC(p[2], p[1]-1, p[0])); } else { date = new Date(dateStr.replace(/\./g, '-') + 'T00:00:00Z'); } if (isNaN(date.getTime())) throw new Error(`Data inválida: ${trade.data_fechamento}`); const isoDate = date.toISOString().split('T')[0]; const quote = quotesMap.get(isoDate); const resultado_liquido_brl = quote ? resultado_liquido_usd * quote : 0; return { ...trade, data_iso: isoDate, mes_ano: isoDate ? isoDate.substring(0, 7) : null, resultado_liquido_usd, resultado_liquido_brl }; }).filter(t => t.mes_ano);
+    const monthlyGroups = processedTrades.reduce((acc, trade) => { const month = trade.mes_ano; if (!acc[month]) acc[month] = { r_brl: 0, r_usd: 0 }; acc[month].r_brl += trade.resultado_liquido_brl; acc[month].r_usd += trade.resultado_liquido_usd; return acc; }, {});
+    const apuracaoMensal = Object.keys(monthlyGroups).sort().map(month => ({ mes: month, resultado_liquido_brl: monthlyGroups[month].r_brl, resultado_liquido_usd: monthlyGroups[month].r_usd }));
+    const lucro_total_anual_brl = processedTrades.reduce((sum, trade) => sum + trade.resultado_liquido_brl, 0);
+    const impostoAnual = lucro_total_anual_brl > 0 ? lucro_total_anual_brl * 0.15 : 0;
+    return { apuracaoMensal, plataforma: platformInfo.name, processedTrades, impostoAnual };
+}
+
+
+function displayResults_IR(data, plataforma, impostoAnual) {
+    const resultsContainer = document.getElementById('results');
+    if (!resultsContainer) return;
+
+    const totalUSD = data.reduce((s, r) => s + r.resultado_liquido_usd, 0);
+    const totalBRL = data.reduce((s, r) => s + r.resultado_liquido_brl, 0);
+    const resultadoAposDarf = totalBRL - impostoAnual;
+    irKpiData = { totalUSD, totalBRL, impostoAnual, resultadoAposDarf };
+
+    const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+    resultsContainer.innerHTML = `
+        <div class="card">
+            <div id="printable-report-area">
+                <div id="success-box" class="p-4 mb-4 text-sm rounded-lg message success" style="display: block;">
+                    <strong>Cálculo atualizado conforme Lei 14.754/2023.</strong>
+                </div>
+                <h2 class="text-2xl font-bold mb-6 text-text-primary">Resultados da Apuração</h2>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="kpi-card">
+                        <p class="kpi-card-title">Resultado Bruto (BRL)</p>
+                        <p class="kpi-card-value ${totalBRL >= 0 ? 'text-positive' : 'text-negative'}">${formatCurrency(totalBRL)}</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-card-title">Resultado Bruto (USD)</p>
+                        <p class="kpi-card-value ${totalUSD >= 0 ? 'text-positive' : 'text-negative'}">${formatCurrency(totalUSD, 'USD')}</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-card-title">Imposto Devido (15%)</p>
+                        <p class="kpi-card-value">${formatCurrency(impostoAnual)}</p>
+                    </div>
+                    <div class="kpi-card">
+                        <p class="kpi-card-title">${resultadoAposDarf < 0 ? 'VALOR A COMPENSAR' : 'Resultado Líquido'}</p>
+                        <p class="kpi-card-value ${resultadoAposDarf >= 0 ? 'text-positive' : 'text-negative'}">${formatCurrency(resultadoAposDarf)}</p>
+                    </div>
+                </div>
+
+                <div class="card mb-8 no-print">
+                    <div class="h-80">
+                        <canvas id="monthly-performance-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 class="text-lg font-semibold mb-4 text-text-primary">Calendário Anual de Resultados</h3>
+                    <p class="text-sm mb-6 no-print text-text-secondary">Clique em um mês para ver suas operações detalhadas.</p>
+                    <div id="calendar-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                </div>
+            </div>
+            <div class="flex justify-center mt-8 no-print">
+                <button id="open-export-modal-ir-btn" class="btn btn-secondary">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    <span>Exportar Relatório</span>
+                </button>
+            </div>
+        </div>
+    `;
+
+    const calendarContainer = document.getElementById('calendar-container');
+    data.forEach(row => {
+        const [year, monthNum] = row.mes.split('-');
+        const monthName = `${monthNames[parseInt(monthNum) - 1]} ${year}`;
+        const card = document.createElement('div');
+        card.className = `month-card ${row.resultado_liquido_brl >= 0 ? 'profit' : 'loss'}`;
+        card.dataset.month = row.mes;
+        const usdResultClass = row.resultado_liquido_usd >= 0 ? '#0aff39' : '#ff0a0a';
+        const brlResultClass = row.resultado_liquido_brl >= 0 ? '#0aff39' : '#ff0a0a';
+        card.innerHTML = `<div class="month-name">${monthName}</div><div class="month-result ${usdResultClass}">${formatCurrency(row.resultado_liquido_usd, 'USD')}</div><div class="month-result text-sm ${brlResultClass}">${formatCurrency(row.resultado_liquido_brl, 'BRL')}</div>`;
+        card.addEventListener('click', () => openTradesModal_IR(row.mes, monthName));
+        calendarContainer.appendChild(card);
+    });
+
+    const chartCanvas = document.getElementById('monthly-performance-chart');
+    if (window.myPerformanceChart) window.myPerformanceChart.destroy();
+
+    window.myPerformanceChart = new Chart(chartCanvas, {
+        type: 'bar',
+        data: {
+            labels: data.map(r => `${monthNames[parseInt(r.mes.split('-')[1])-1].substring(0,3)}/${r.mes.split('-')[0].substring(2,4)}`),
+            datasets: [{
+                label: 'Resultado (BRL)',
+                data: data.map(r => r.resultado_liquido_brl),
+                backgroundColor: data.map(r => r.resultado_liquido_brl >= 0 ? '#0aff39' : '#ff0a0a'),
+                borderColor: data.map(r => r.resultado_liquido_brl >= 0 ? '#0aff39' : '#ff0a0a'),
+                borderWidth: 1
+            }]
+        },
+        options: { maintainAspectRatio: false, responsive: true, plugins: { title: { display: true, text: 'Desempenho Mensal (BRL)', color: '#e0e0e0', font: { size: 18, family: "Sora", weight: '600' }, align: 'start', padding: { bottom: 24 } }, legend: { display: false }, tooltip: { callbacks: { label: (c) => `Resultado: ${formatCurrency(c.parsed.y)}` } } }, scales: { y: { ticks: { color: '#e0e0e0', callback: (v) => 'R$ ' + v.toLocaleString('pt-BR') }, grid: { color: 'rgba(212, 175, 55, 0.2)' } }, x: { ticks: { color: '#e0e0e0' }, grid: { display: false } } } }
+    });
+
+    document.getElementById('open-export-modal-ir-btn').addEventListener('click', () => openExportModal('ir'));
+
+    resultsSection_IR.classList.remove('hidden');
+
+    // Gerar o resumo anual (wrapped)
+    generateAndDisplayWrapped(allProcessedTrades_IR);
+}
+
+
+
+// =======================================================================
+// RESUMO ANUAL (WRAPPED) - LÓGICA E RENDERIZAÇÃO
+// =======================================================================
+
+function formatMonthYear(mesAno) {
+    if (!mesAno) return 'N/A';
+    const [year, month] = mesAno.split('-');
+    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+    return `${monthNames[parseInt(month) - 1]}/${year}`;
+}
+
+function generateAndDisplayWrapped(tradesData) {
+    if (!tradesData || tradesData.length === 0) {
+        document.getElementById('main-tab-wrapped').style.display = 'none';
+        return;
+    }
+    document.getElementById('main-tab-wrapped').style.display = 'inline-flex';
+
+    // --- Cálculos dos dados ---
+    const totalTrades = tradesData.length;
+    const winningTrades = tradesData.filter(t => t.resultado_liquido_brl > 0);
+    const losingTrades = tradesData.filter(t => t.resultado_liquido_brl < 0);
+    const winRate = totalTrades > 0 ? (winningTrades.length / totalTrades) * 100 : 0;
+
+    const netResult = tradesData.reduce((sum, t) => sum + t.resultado_liquido_brl, 0);
+    const netResultUSD = tradesData.reduce((sum, t) => sum + t.resultado_liquido_usd, 0);
+    const biggestWin = winningTrades.length > 0 ? Math.max(...winningTrades.map(t => t.resultado_liquido_brl)) : 0;
+    const biggestLoss = losingTrades.length > 0 ? Math.min(...losingTrades.map(t => t.resultado_liquido_brl)) : 0;
+
+    const avgWin = winningTrades.length > 0 ? winningTrades.reduce((sum, t) => sum + t.resultado_liquido_brl, 0) / winningTrades.length : 0;
+    const avgLoss = losingTrades.length > 0 ? losingTrades.reduce((sum, t) => sum + t.resultado_liquido_brl, 0) / losingTrades.length : 0;
+    const profitFactor = Math.abs(avgLoss) > 0 ? avgWin / Math.abs(avgLoss) : 0;
+
+    // Análise por ativo
+    const assetStats = tradesData.reduce((acc, t) => {
+        if (!acc[t.ativo]) {
+            acc[t.ativo] = { profit: 0, trades: 0, wins: 0 };
+        }
+        acc[t.ativo].profit += t.resultado_liquido_brl;
+        acc[t.ativo].trades++;
+        if (t.resultado_liquido_brl > 0) acc[t.ativo].wins++;
+        return acc;
+    }, {});
+
+    const topAssets = Object.entries(assetStats)
+        .sort(([,a], [,b]) => b.profit - a.profit)
+        .slice(0, 5)
+        .map(([symbol, stats]) => ({
+            symbol,
+            profit: stats.profit,
+            trades: stats.trades
+        }));
+
+    // Análise mensal
+    const monthlyResults = tradesData.reduce((acc, trade) => {
+        if (!acc[trade.mes_ano]) {
+            acc[trade.mes_ano] = { profit: 0, trades: 0, wins: 0 };
+        }
+        acc[trade.mes_ano].profit += trade.resultado_liquido_brl;
+        acc[trade.mes_ano].trades++;
+        if (trade.resultado_liquido_brl > 0) acc[trade.mes_ano].wins++;
+        return acc;
+    }, {});
+
+    const sortedMonths = Object.keys(monthlyResults).sort();
+    const bestMonth = sortedMonths.reduce((a, b) => monthlyResults[a].profit > monthlyResults[b].profit ? a : b, sortedMonths[0]);
+    const worstMonth = sortedMonths.reduce((a, b) => monthlyResults[a].profit < monthlyResults[b].profit ? a : b, sortedMonths[0]);
+
+    // Renderizar o Wrapped completo com Swiper
+    const wrappedContainer = document.getElementById('main-content-wrapped');
+    wrappedContainer.innerHTML = `
+        <div class="wrapped-container">
+            <h1 class="wrapped-title-main">Seu Resumo Anual 2024</h1>
+            <p class="wrapped-subtitle-main">Análise completa dos seus resultados no mercado americano</p>
+
+            <!-- Swiper Container -->
+            <div class="mySwiper">
+                <div class="swiper-wrapper">
+
+                     <!-- === SLIDE 1 CORRIGIDO === -->
+                        <div class="swiper-slide wrapped-slide-intro-v2">
+                            <div class="intro-v2-content">
+                                <div class="intro-v2-header">XTRADERS</div>
+                                <div class="intro-v2-logo">
+                                    <svg width="489" height="382" viewBox="0 0 489 382" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_101_36" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="489" height="382">
+<path d="M458.815 0H30.1852C13.5144 0 0 13.5452 0 30.254V350.946C0 367.655 13.5144 381.2 30.1852 381.2H458.815C475.486 381.2 489 367.655 489 350.946V30.254C489 13.5452 475.486 0 458.815 0Z" fill="white"/>
+</mask>
+<g mask="url(#mask0_101_36)">
+<path d="M0.000112058 -4.11719V34.8499C-0.0456441 32.0222 0.771835 29.2481 2.34276 26.9003C3.91369 24.5524 6.16283 22.7432 8.78814 21.7156C11.4134 20.688 14.2892 20.4913 17.0291 21.1518C19.7691 21.8123 22.2421 23.2985 24.1159 25.4107L112.44 119.743H206.07C209.288 119.713 212.443 120.634 215.143 122.392C217.843 124.149 219.968 126.665 221.253 129.626C222.539 132.587 222.928 135.861 222.372 139.043C221.816 142.224 220.34 145.17 218.128 147.516L24.1159 354.997C22.2454 357.105 19.778 358.59 17.0439 359.252C14.3099 359.914 11.4395 359.722 8.81694 358.702C6.1944 357.682 3.94478 355.883 2.36912 353.545C0.793457 351.207 -0.0330791 348.441 0.000112058 345.619V383.981H489.732V-4.11719H0.000112058ZM148.915 14.8218C147.628 13.4498 146.77 11.7285 146.449 9.87159C146.128 8.01472 146.357 6.10407 147.109 4.37686C147.86 2.64964 149.1 1.18193 150.675 0.155951C152.251 -0.870033 154.091 -1.4091 155.969 -1.39433H333.16C335.026 -1.38207 336.848 -0.826893 338.406 0.203911C339.964 1.23471 341.191 2.69689 341.937 4.41324C342.684 6.12959 342.918 8.02643 342.613 9.87388C342.307 11.7213 341.473 13.4401 340.214 14.8218L265.274 95.9024C262.68 98.6776 259.547 100.89 256.068 102.402C252.589 103.914 248.838 104.694 245.047 104.694C241.256 104.694 237.505 103.914 234.026 102.402C230.547 100.89 227.413 98.6776 224.82 95.9024L148.915 14.8218ZM333.039 381.863H155.909C154.038 381.878 152.203 381.344 150.631 380.326C149.059 379.307 147.818 377.849 147.062 376.131C146.305 374.414 146.066 372.512 146.374 370.659C146.682 368.807 147.524 367.085 148.795 365.707L223.976 284.385C226.569 281.609 229.702 279.398 233.182 277.885C236.661 276.373 240.411 275.593 244.203 275.593C247.994 275.593 251.745 276.373 255.224 277.885C258.703 279.398 261.836 281.609 264.43 284.385L340.093 365.707C341.389 367.072 342.254 368.79 342.58 370.646C342.906 372.503 342.677 374.415 341.923 376.141C341.169 377.868 339.924 379.332 338.343 380.35C336.763 381.368 334.917 381.894 333.039 381.863ZM489.008 345.558C489.054 348.386 488.237 351.16 486.666 353.508C485.095 355.856 482.846 357.665 480.22 358.692C477.595 359.72 474.719 359.917 471.979 359.256C469.239 358.596 466.766 357.11 464.892 354.997L376.629 260.787H282.999C279.793 260.789 276.656 259.851 273.974 258.088C271.292 256.326 269.181 253.816 267.9 250.866C266.619 247.917 266.225 244.656 266.765 241.484C267.306 238.313 268.757 235.369 270.941 233.013L465.134 25.4712C467.008 23.359 469.48 21.8729 472.22 21.2123C474.96 20.5518 477.836 20.7486 480.461 21.7761C483.087 22.8037 485.336 24.6129 486.907 26.9608C488.478 29.3086 489.295 32.0827 489.249 34.9104L489.008 345.558Z" fill="url(#paint0_linear_101_36)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_101_36" x1="-0.00170898" y1="189.932" x2="489.732" y2="189.932" gradientUnits="userSpaceOnUse">
+<stop stop-color="#D4AF37"/>
+<stop offset="0.475962" stop-color="#FFEE99"/>
+<stop offset="1" stop-color="#D4AF37"/>
+</linearGradient>
+</defs>
+</svg>
+
+                                </div>
+                                <div class="intro-v2-footer">REPORT</div>
+                            </div>
+                        </div>
+
+                    <!-- Slide 2: Visão Geral + Performance -->
+                    <div class="swiper-slide wrapped-slide">
+                        <div class="slide-content">
+                            <div class="slide-title">VISÃO GERAL</div>
+
+                            <div class="main-result-card">
+                                <div class="result-label">RESULTADO ANUAL</div>
+                                <div class="result-value">${formatCurrency(netResult)}</div>
+                            </div>
+
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <div class="metric-label">TOTAL DE TRADES</div>
+                                    <div class="metric-value">${totalTrades}</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">MESES ATIVOS</div>
+                                    <div class="metric-value">${sortedMonths.length}</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">TAXA DE ACERTO</div>
+                                    <div class="metric-value">${winRate.toFixed(1)}%</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">FATOR LUCRO</div>
+                                    <div class="metric-value">${profitFactor.toFixed(2)}</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">MÉDIA DE GANHO</div>
+                                    <div class="metric-value">${formatCurrency(avgWin)}</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">MAIOR GANHO</div>
+                                    <div class="metric-value">${formatCurrency(biggestWin)}</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">MÉDIA DE PERDA</div>
+                                    <div class="metric-value">${formatCurrency(avgLoss)}</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">MAIOR PERDA</div>
+                                    <div class="metric-value">${formatCurrency(biggestLoss)}</div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <!-- Slide 4: Top Ativos -->
+                    <div class="swiper-slide wrapped-slide">
+                        <div class="slide-content">
+                            <h3 class="slide-title">TOP 5 ATIVOS</h3>
+                            <div class="assets-ranking">
+                                ${topAssets.map((asset, index) => `
+                                    <div class="asset-card asset-rank-${index + 1}">
+                                        <div class="asset-rank-info">
+                                            <span class="asset-rank">#${index + 1}</span>
+                                            <span class="asset-name">${asset.symbol}</span>
+                                        </div>
+                                        <span class="asset-profit">${formatCurrency(asset.profit)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 5: Análise Mensal -->
+                    <div class="swiper-slide wrapped-slide">
+                        <div class="slide-content">
+                            <h3 class="slide-title">ANÁLISE MENSAL</h3>
+                            <div class="chart-container">
+                                <canvas id="wrapped-monthly-chart"></canvas>
+                            </div>
+                            <div class="month-summary">
+                                <div class="month-card">
+                                    <p class="month-label">MELHOR MÊS</p>
+                                    <p class="month-value">${formatMonthYear(bestMonth)}<br>${formatCurrency(monthlyResults[bestMonth]?.profit || 0)}</p>
+                                </div>
+                                <div class="month-card">
+                                    <p class="month-label">PIOR MÊS</p>
+                                    <p class="month-value">${formatMonthYear(worstMonth)}<br>${formatCurrency(monthlyResults[worstMonth]?.profit || 0)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slide 6: Mês a Mês -->
+                    <div class="swiper-slide wrapped-slide">
+                        <div class="slide-content">
+                            <h3 class="slide-title">MÊS A MÊS</h3>
+                            <div class="monthly-assets-grid">
+                                ${sortedMonths.map(month => {
+                                    const monthlyTrades = tradesData.filter(t => t.mes_ano === month);
+                                    const bestAsset = monthlyTrades.reduce((best, current) => 
+                                        current.resultado_liquido_brl > (best?.resultado_liquido_brl || -Infinity) ? current : best
+                                    , null);
+                                    
+                                    const [year, monthNum] = month.split('-');
+                                    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+                                    const monthLabel = `${monthNames[parseInt(monthNum) - 1]}`;
+                                    
+                                    return `
+                                        <div class="monthly-asset-card">
+                                            <div class="month-label">${monthLabel}</div>
+                                            <div class="best-asset">${bestAsset?.ativo || 'N/A'}</div>
+                                            <div class="asset-profit">${formatCurrency(bestAsset?.resultado_liquido_brl || 0)}</div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div></old_str>
+
+                    <!-- Slide 7: Card Final de Resumo -->
+                    <div class="swiper-slide wrapped-slide" id="final-slide-to-export">
+                        <div class="slide-content">
+                            <div class="final-summary-card" id="export-summary-card">
+
+                                <div class="final-card-main-metric">
+                                    <div class="main-metric-label">RESULTADO ANUAL</div>
+                                    <div class="main-metric-value">${formatCurrency(netResult)}</div>
+                                </div>
+
+                                <div class="final-card-secondary-grid">
+                                    <div class="secondary-metric-card positive">
+                                        <div class="secondary-metric-label">Total de Trades</div>
+                                        <div class="secondary-metric-value">${totalTrades}</div>
+                                    </div>
+                                    <div class="secondary-metric-card positive">
+                                        <div class="secondary-metric-label">Taxa de Acerto</div>
+                                        <div class="secondary-metric-value">${winRate.toFixed(1)}%</div>
+                                    </div>
+                                    <div class="secondary-metric-card">
+                                        <div class="secondary-metric-label">Maior Ganho</div>
+                                        <div class="secondary-metric-value">${formatCurrency(biggestWin)}</div>
+                                    </div>
+                                    <div class="secondary-metric-card">
+                                        <div class="secondary-metric-label">Meses Ativos</div>
+                                        <div class="secondary-metric-value">${sortedMonths.length}</div>
+                                    </div>
+                                </div>
+
+                                <!-- HTML CORRIGIDO PARA O ATIVO #1 -->
+                                <div class="final-card-top-asset">
+                                    <!-- Novo container para agrupar rank e nome -->
+                                    <div class="top-asset-info">
+                                        <div class="top-asset-rank">#1</div>
+                                        <div class="top-asset-name">${topAssets[0]?.symbol || 'N/A'}</div>
+                                    </div>
+                                    <!-- O valor fica sozinho -->
+                                    <div class="top-asset-profit-value">${formatCurrency(topAssets[0]?.profit || 0)}</div>
+                                </div>  
+
+                                <div class="final-card-chart-container">
+                                    <canvas id="wrapped-final-chart"></canvas>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Navigation -->
+                <div class="swiper-pagination"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+
+            <!-- Botões de ação -->
+            <div class="action-buttons">
+                <button id="export-wrapped-btn" class="btn btn-primary">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    <span>Exportar como Imagem</span>
+                </button>
+                <button id="share-wrapped-btn" class="btn btn-secondary">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                    </svg>
+                    Compartilhar
+                </button>
+            </div>
+        </div>
+    `;
+
+    // Inicializar Swiper
+    setTimeout(() => {
+        const swiper = new Swiper('.mySwiper', {
+            effect: 'coverflow',
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: 'auto',
+            coverflowEffect: {
+                rotate: 0,
+                stretch: 0,
+                depth: 100,
+                modifier: 2.5,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                768: {
+                    slidesPerView: 1,
+                    spaceBetween: 20,
+                },
+                1024: {
+                    slidesPerView: 'auto',
+                    spaceBetween: 30,
+                }
+            }
+        });
+
+        // Renderizar gráficos
+        const originalCanvas = document.getElementById('wrapped-monthly-chart');
+        renderMonthlyChart();
+        renderFinalChart();
+        const chartData = { sortedMonths, monthlyResults };
+        
+        document.getElementById('export-wrapped-btn').addEventListener('click', () => {
+            exportWrappedAsImage(chartData); // Passa os dados para a função
+        });
+
+        document.getElementById('share-wrapped-btn').addEventListener('click', () => {
+            shareWrapped(chartData); // Passa os dados para a função
+        });
+    }, 300);
+
+    function renderMonthlyChart() {
+        const chartCanvas = document.getElementById('wrapped-monthly-chart');
+        if (!chartCanvas) return;
+
+        if (window.wrappedMonthlyChart) window.wrappedMonthlyChart.destroy();
+
+        window.wrappedMonthlyChart = new Chart(chartCanvas, {
+            type: 'bar',
+            data: {
+                labels: sortedMonths.map(month => {
+                    const [year, monthNum] = month.split('-');
+                    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+                    return `${monthNames[parseInt(monthNum) - 1]}`;
+                }),
+                datasets: [{
+                    data: sortedMonths.map(month => monthlyResults[month].profit),
+                    backgroundColor: sortedMonths.map(month => 
+                        monthlyResults[month].profit >= 0 ? '#0aff39' : '#ff0a0a'
+                    ),
+                    borderRadius: 4,
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: { 
+                    legend: { display: false }
+                },
+                scales: { 
+                    y: { 
+                        ticks: { 
+                            color: '#FFFFFF', 
+                            font: { size: 10 },
+                            callback: function(value) {
+                                return 'R$ ' + (value / 1000).toFixed(0) + 'k';
+                            }
+                        }, 
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+                        border: { color: 'rgba(255, 255, 255, 0.2)' } 
+                    }, 
+                    x: { 
+                        ticks: { 
+                            color: '#FFFFFF', 
+                            font: { size: 10 }
+                        }, 
+                        grid: { display: false }, 
+                        border: { color: 'rgba(255, 255, 255, 0.2)' } 
+                    } 
+                }
+            }
+        });
+    }
+
+    renderFinalChart = function(canvasElement) {
+        const chartCanvas = canvasElement || document.getElementById('wrapped-final-chart');
+        if (!chartCanvas) return;
+
+        if (!canvasElement && window.wrappedFinalChart) {
+            window.wrappedFinalChart.destroy();
+        }
+
+        const chart = new Chart(chartCanvas, {
+            type: 'line',
+            data: {
+                labels: sortedMonths.map(month => {
+                    const [year, monthNum] = month.split('-');
+                    const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+                    return `${monthNames[parseInt(monthNum) - 1]}`;
+                }),
+                datasets: [{
+                    data: sortedMonths.map(month => monthlyResults[month].profit),
+                    borderColor: '#D4AF37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    pointBackgroundColor: '#D4AF37',
+                    pointRadius: 3,
+                    pointHoverRadius: 5
+                }]
+            },
+            options: {
+                animation: false,
+                devicePixelRatio: 3, // Increased for better quality
+                maintainAspectRatio: false,
+                responsive: true,
+                plugins: { 
+                    legend: { display: false }
+                },
+                scales: { 
+                    y: { 
+                        ticks: { 
+                            color: '#FFFFFF', 
+                            font: { size: 8 },
+                            callback: function(value) {
+                                return 'R$ ' + (value / 1000).toFixed(0) + 'k';
+                            }
+                        }, 
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
+                        border: { color: 'rgba(255, 255, 255, 0.2)' } 
+                    }, 
+                    x: { 
+                        ticks: { 
+                            color: '#FFFFFF', 
+                            font: { size: 8 }
+                        }, 
+                        grid: { display: false }, 
+                        border: { color: 'rgba(255, 255, 255, 0.2)' } 
+                    } 
+                }
+            }
+        });
+
+        if (!canvasElement) {
+            window.wrappedFinalChart = chart;
+        }
+    }
+
+    // Configurar event listeners
+    document.getElementById('export-wrapped-btn').addEventListener('click', exportWrappedAsImage);
+    document.getElementById('share-wrapped-btn').addEventListener('click', shareWrapped);
+}
+
+// =======================================================================
+// LÓGICA DE EXPORTAÇÃO E COMPARTILHAMENTO (OTIMIZADA)
+// =======================================================================
+
+/**
+ * Função auxiliar para atualizar o estado de um botão (texto, ícone e estado desabilitado).
+ * @param {HTMLElement} button - O elemento do botão a ser atualizado.
+ * @param {string} text - O novo texto para o botão.
+ * @param {boolean} disabled - Se o botão deve ser desabilitado.
+ */
+function updateButtonState(button, text, disabled) {
+    button.disabled = disabled;
+    // Tenta encontrar o texto dentro do botão para não apagar o ícone SVG
+    const textElement = button.querySelector('span') || button; 
+    textElement.textContent = text;
+}
+
+
+/**
+/**
+ * Função central para gerar a imagem de um elemento DOM com máxima fidelidade.
+ * VERSÃO FINAL: Clona o elemento, copia todos os estilos computados para o clone,
+ * redesenha o gráfico e aguarda o ciclo de renderização antes da captura.
+ *
+/**
+ * Função central para gerar a imagem de um elemento DOM com máxima fidelidade.
+ * VERSÃO DEFINITIVA: Usa a técnica do "clone invisível no viewport" para forçar a renderização
+ * completa pelo navegador antes da captura pela html2canvas.
+ *
+ * @param {string} elementId - O ID do elemento a ser capturado.
+ * @param {object} chartData - Dados para redesenhar o gráfico.
+ * @returns {Promise<Blob>} Uma Promise que resolve com o Blob da imagem PNG.
+ */
+async function generateImageBlobFromElement(elementId, chartData) {
+    const originalElement = document.getElementById(elementId);
+    if (!originalElement) {
+        throw new Error(`Elemento com ID "${elementId}" não encontrado.`);
+    }
+
+    // 1. Clonar o nó do DOM
+    const clone = originalElement.cloneNode(true);
+    
+    // Set width and height explicitly to help html2canvas
+    clone.style.width = originalElement.offsetWidth + 'px';
+    clone.style.height = originalElement.offsetHeight + 'px';
+
+    // 2. Copiar os estilos computados para garantir a aparência exata
+    const computedStyle = window.getComputedStyle(originalElement);
+    for (const style of computedStyle) {
+        clone.style.setProperty(style, computedStyle.getPropertyValue(style));
+    }
+    
+    // --- A CORREÇÃO CRÍTICA ESTÁ AQUI ---
+    // 3. Estilizar o clone para que fique no viewport, mas totalmente invisível
+    clone.style.position = 'absolute';
+    clone.style.top = '0';
+    clone.style.left = '0';
+    clone.style.zIndex = '-1'; // Coloca atrás de todo o conteúdo
+    clone.style.opacity = '1'; // Mantém a opacidade para a captura
+    clone.style.pointerEvents = 'none'; // Impede qualquer interação do mouse
+    // ------------------------------------
+    
+    // 4. Adicionar o clone ao corpo do documento
+    document.body.appendChild(clone);
+
+    try {
+        // 5. Redesenhar o gráfico no canvas do clone
+        const clonedCanvas = clone.querySelector('canvas');
+        if (clonedCanvas) {
+            renderFinalChart(clonedCanvas);
+        }
+
+        // 6. Esperar que as fontes estejam 100% prontas
+        await document.fonts.ready;
+
+        // 7. Esperar o próximo ciclo de renderização para garantir que o layout está estável
+        const canvas = await new Promise((resolve) => {
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    // A captura agora é feita em um elemento que o navegador renderizou completamente
+                    html2canvas(clone, {
+                        backgroundColor: 'transparent', // Usa o fundo do próprio elemento
+                        useCORS: true,
+                        scale: 4, // Increased for better quality
+                    }).then(resolve);
+                }, 200); // Add a 200ms delay
+            });
+        });
+
+        return new Promise(resolve => {
+            canvas.toBlob(blob => resolve(blob), 'image/png');
+        });
+
+    } finally {
+        // 8. Limpeza: remover o clone do documento, não importa o que aconteça
+        document.body.removeChild(clone);
+    }
+
+}
+async function exportWrappedAsImage() {
+    const button = document.getElementById('export-wrapped-btn');
+    if (button.disabled) return;
+
+    updateButtonState(button, 'Gerando...', true);
+
+    try {
+        const imageBlob = await generateImageBlobFromElement('final-slide-to-export');
+        
+        const link = document.createElement('a');
+        link.download = `meu_resumo_anual_xtraders.png`;
+        link.href = URL.createObjectURL(imageBlob);
+        link.click();
+
+        // Limpa o objeto URL da memória após o download
+        URL.revokeObjectURL(link.href);
+
+    } catch (err) {
+        console.error("Erro ao gerar imagem:", err);
+        alert("Ocorreu um erro ao gerar a imagem.");
+    } finally {
+        updateButtonState(button, 'Exportar como Imagem', false);
+    }
+}
+
+
+/**
+ * OTIMIZADO: Compartilha o card de resumo (imagem ou link).
+ */
+async function shareWrapped() {
+    const button = document.getElementById('share-wrapped-btn');
+    if (button.disabled) return;
+    
+    // Adiciona um <span> se não existir
+    if (!button.querySelector('span')) {
+        button.innerHTML += '<span>Compartilhar</span>';
+    }
+
+    updateButtonState(button, 'Preparando...', true);
+
+    try {
+        const imageBlob = await generateImageBlobFromElement('final-slide-to-export');
+        const imageFile = new File([imageBlob], 'resumo_anual_xtraders.png', { type: 'image/png' });
+
+        // Verifica se o navegador suporta compartilhar ARQUIVOS
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [imageFile] })) {
+            await navigator.share({
+                files: [imageFile],
+                title: 'Meu Resumo Anual 2024 - XTributation',
+                text: 'Confira meu desempenho no mercado americano em 2024!',
+            });
+        } 
+        // Se não suportar arquivos, tenta compartilhar o LINK (fallback)
+        else if (navigator.share) {
+             await navigator.share({
+                title: 'Meu Resumo Anual 2024 - XTributation',
+                text: 'Confira meu desempenho no mercado americano em 2024!',
+                url: window.location.href,
+            });
+        }
+        // Se não suportar a API de Share, copia o link para a área de transferência
+        else {
+            await navigator.clipboard.writeText(window.location.href);
+            updateButtonState(button, 'Link Copiado!', false);
+            // Retorna ao texto original após 2 segundos
+            setTimeout(() => updateButtonState(button, 'Compartilhar', false), 2000);
+            return; // Sai da função para não executar o `finally` imediatamente
+        }
+    } catch (err) {
+        console.log('Erro ao compartilhar ou processo cancelado pelo usuário:', err);
+    } finally {
+        // Apenas reabilita o botão se não for o caso do clipboard (que tem seu próprio timer)
+        if (button.textContent !== 'Link Copiado!') {
+             updateButtonState(button, 'Compartilhar', false);
+        }
+    }
+}
+
+function openTradesModal_IR(month, monthName) {
+    const modalTitle = document.getElementById('modal-title'); const modalTableBody = document.getElementById('modal-table-body');
+    modalTitle.textContent = `Operações de ${monthName}`; modalTableBody.innerHTML = '';
+    const tradesForMonth = allProcessedTrades_IR.filter(trade => trade.mes_ano === month);
+    tradesForMonth.forEach(trade => { const tr = document.createElement('tr'); const resultClass = trade.resultado_liquido_usd >= 0 ? 'text-positive' : 'text-negative'; tr.innerHTML = `<td class="px-4 py-3 text-sm text-text-secondary">${new Date(trade.data_iso + 'T00:00:00Z').toLocaleDateString('pt-BR',{timeZone:'UTC'})}</td><td class="px-4 py-3 text-sm text-text-primary">${trade.ativo}</td><td class="px-4 py-3 text-sm text-right font-semibold ${resultClass}">${formatCurrency(trade.resultado_liquido_usd,'USD')}</td><td class="px-4 py-3 text-sm text-right font-semibold ${resultClass}">${formatCurrency(trade.resultado_liquido_brl,'BRL')}</td>`; modalTableBody.appendChild(tr); });
+    modal_IR.classList.add('active');
+}
+
+    // =======================================================================
+    // LÓGICA DE EXPORTAÇÃO
+    // =======================================================================
+    const { jsPDF } = window.jspdf;
+    const exportModal = document.getElementById('export-modal'); const exportModalTitle = document.getElementById('export-modal-title'); const closeExportModalBtn = document.getElementById('close-export-modal-btn'); const exportOptionsContainer = document.getElementById('export-options-container'); const generateExportBtn = document.getElementById('generate-export-btn'); let currentExportType = null;
+
+    function openExportModal(type) {
+        currentExportType = type; 
+        exportOptionsContainer.innerHTML = ''; 
+        let optionsHtml = '';
+        if (type === 'ir') { 
+            exportModalTitle.textContent = "Exportar Relatório de IR"; 
+            optionsHtml = `<label class="custom-checkbox-label"><input type="checkbox" id="include-ir-summary" class="custom-checkbox" checked> Incluir Resumo Anual</label><label class="custom-checkbox-label"><input type="checkbox" id="include-ir-monthly" class="custom-checkbox" checked> Incluir Resumo Mensal</label><label class="custom-checkbox-label"><input type="checkbox" id="include-ir-details" class="custom-checkbox"> Incluir Todas as Operações</label>`; 
+        } else if (type === 'cambial') { 
+            exportModalTitle.textContent = "Exportar Relatório Cambial"; 
+            optionsHtml = `<label class="custom-checkbox-label"><input type="checkbox" id="include-cambial-summary" class="custom-checkbox" checked> Incluir Resumo Geral</label>`; 
+        }
+        exportOptionsContainer.innerHTML = optionsHtml; 
+        exportModal.classList.add('active');
+    }
+
+    function closeExportModal() { exportModal.classList.remove('active'); }
+    closeExportModalBtn.addEventListener('click', closeExportModal);
+    exportModal.addEventListener('click', (e) => { if (e.target === exportModal) closeExportModal(); });
+
+    generateExportBtn.addEventListener('click', () => {
+        const btnText = document.getElementById('export-btn-text'); 
+        const loader = document.getElementById('export-loader');
+        btnText.textContent = 'Gerando...'; 
+        loader.classList.remove('hidden'); 
+        generateExportBtn.disabled = true;
+
+        setTimeout(() => { 
+            if (currentExportType === 'ir') { 
+                generateProfessionalPDF_IR(); 
+            } else if (currentExportType === 'cambial') { 
+                generateProfessionalPDF_Cambial(); 
+            } 
+            btnText.textContent = 'Gerar e Baixar PDF'; 
+            loader.classList.add('hidden'); 
+            generateExportBtn.disabled = false; 
+            closeExportModal(); 
+        }, 500);
+    });
+
+    // =======================================================================
+// LÓGICA DE EXPORTAÇÃO (VERSÃO FINAL COM CORREÇÃO DE SVG)
+// =======================================================================
+
+/**
+ * Função auxiliar para converter um SVG em uma imagem PNG usando um canvas.
+ * @param {string} svgString O código SVG como string.
+ * @param {number} width A largura desejada para a imagem no PDF.
+ * @param {number} height A altura desejada para a imagem no PDF.
+ * @returns {Promise<string>} Uma Promise que resolve com o Data URI da imagem PNG.
+ */
+function convertSvgToPngDataUri(svgString, width, height) {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        // O SVG precisa ser convertido para Base64 para ser usado como source da imagem.
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-t' });
+        const url = URL.createObjectURL(svgBlob);
+
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            // Usamos uma escala para melhor qualidade (retina-ready)
+            const scale = 3; 
+            canvas.width = width * scale;
+            canvas.height = height * scale;
+            const ctx = canvas.getContext('2d');
+            
+            // Desenha a imagem SVG no canvas
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            // Converte o conteúdo do canvas para um PNG Data URI
+            const pngDataUri = canvas.toDataURL('image/png');
+            
+            // Limpa a URL do Blob para liberar memória
+            URL.revokeObjectURL(url);
+            
+            resolve(pngDataUri);
+        };
+
+        img.onerror = (err) => {
+            URL.revokeObjectURL(url);
+            reject(err);
+        };
+
+        img.src = url;
+    });
+}
+
+    function addPdfHeaderFooter(doc) {
+    const pageCount = doc.internal.getNumberOfPages();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.setTextColor(100); // Cor cinza para o texto do rodapé
+        doc.setFont('helvetica', 'normal');
+
+        // Rodapé corrigido
+        doc.text('XTributation - Relatório de Apuração', 15, pageHeight - 10);
+        doc.text(` ${i} de ${pageCount}`, pageWidth - 40, pageHeight - 10);
+    }
+}
+
+/**
+ * Desenha os 4 cards de KPI (Indicadores Chave de Desempenho) no PDF.
+ * ESTA É A VERSÃO CORRIGIDA COM MELHOR ESPAÇAMENTO E TAMANHO.
+ */
+function drawKpiBoxes(doc, startY) {
+    const kpi = irKpiData;
+    
+    // --- VALORES AJUSTADOS ---
+    const boxWidth = 95;      // Aumentado de 42 para 95
+    const boxHeight = 35;     // Aumentado de 25 para 35 para mais espaço vertical
+    const gap = 10;           // Aumentado de 5 para 10
+    const numBoxes = 4;
+    // --- FIM DOS AJUSTES ---
+
+    const totalWidth = (numBoxes * boxWidth) + ((numBoxes - 1) * gap);
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let startX = (pageWidth - totalWidth) / 2; // O cálculo de centralização continua o mesmo
+
+    const kpiData = [
+        { title: 'RESULTADO BRUTO (BRL)', value: formatCurrency(kpi.totalBRL) },
+        { title: 'RESULTADO BRUTO (USD)', value: formatCurrency(kpi.totalUSD, 'USD') },
+        { title: 'IMPOSTO DEVIDO (15%)', value: formatCurrency(kpi.impostoAnual) },
+        { title: 'RESULTADO LÍQUIDO', value: formatCurrency(kpi.resultadoAposDarf) }
+    ];
+
+    kpiData.forEach(item => {
+        // Desenha a borda do card
+        doc.setDrawColor(220, 220, 220); // Cinza claro
+        doc.roundedRect(startX, startY, boxWidth, boxHeight, 5, 5, 'S'); // Borda arredondada
+
+        // Adiciona o título (label)
+        doc.setFontSize(8);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(100, 100, 100); // Cinza
+        // Posição Y ajustada para a nova altura
+        doc.text(item.title, startX + boxWidth / 2, startY + 12, { align: 'center' });
+
+        // Adiciona o valor
+        doc.setFontSize(14);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(0, 0, 0); // Preto
+        // Posição Y ajustada para a nova altura
+        doc.text(item.value, startX + boxWidth / 2, startY + 28, { align: 'center' });
+        
+        // Move o X para a posição do próximo card
+        startX += boxWidth + gap;
+    });
+    
+    // Retorna a posição Y final para o próximo elemento
+    return startY + boxHeight;
+}
+
+async function generateProfessionalPDF_IR() { // A função agora é ASYNC
+    if (!finalReportData_IR) {
+        alert('Dados não processados. Por favor, gere o relatório primeiro.');
+        return;
+    }
+
+    try {
+        const doc = new jsPDF({
+            orientation: 'p',
+            unit: 'px',
+            format: 'a4'
+        });
+
+        const user = auth.currentUser;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        
+        // --- 1. CABEÇALHO COM LOGO ---
+        const svgString = `<svg viewBox="0 0 59.8 45.9" xmlns="http://www.w3.org/2000/svg"><path d="M4.76369 -0.719727C2.13278 -0.719727 0 1.41305 0 4.04396V4.04396C0.00217239 3.70526 0.105853 3.37498 0.297665 3.09573C0.489477 2.81649 0.760619 2.60109 1.07611 2.47733C1.3916 2.35357 1.73695 2.32713 2.06762 2.40142C2.39829 2.47571 2.6991 2.64732 2.93124 2.89411L12.335 12.8644C13.2797 13.866 14.5956 14.4337 15.9724 14.4337H25.321C25.7157 14.4314 26.1025 14.5448 26.4334 14.7599C26.7644 14.975 27.0249 15.2823 27.1829 15.6438C27.3409 16.0054 27.3894 16.4053 27.3224 16.794C27.2553 17.1828 27.0757 17.5434 26.8058 17.8313L2.93398 43.2184C2.70202 43.4662 2.40099 43.6387 2.06985 43.7135C1.7387 43.7884 1.3927 43.7622 1.07662 43.6383C0.760551 43.5144 0.488961 43.2986 0.297012 43.0187C0.105064 42.7389 0.00159475 42.4079 0 42.0686V42.0686C0 44.6587 2.09968 46.7584 4.68977 46.7584H55.1698C57.9313 46.7584 60.1698 44.5198 60.1698 41.7584V4.28028C60.1698 1.51886 57.9313 -0.719727 55.1698 -0.719727H4.76369ZM18.297 1.59641C18.1396 1.42755 18.0354 1.2162 17.9972 0.988633C17.9591 0.761063 17.9887 0.527307 18.0824 0.316417C18.1761 0.105528 18.3297 -0.073197 18.5242 -0.197543C18.7187 -0.321889 18.9455 -0.386374 19.1763 -0.382983H40.9415C41.1711 -0.38424 41.3961 -0.318396 41.5888 -0.193551C41.7814 -0.0687055 41.9334 0.109697 42.026 0.319715C42.1185 0.529733 42.1476 0.762208 42.1097 0.988546C42.0718 1.21488 41.9686 1.42522 41.8126 1.59367L32.5669 11.5153C32.2486 11.8553 31.8638 12.1264 31.4364 12.3117C31.009 12.497 30.5481 12.5926 30.0822 12.5926C29.6163 12.5926 29.1553 12.497 28.7279 12.3117C28.3005 12.1264 27.9158 11.8553 27.5975 11.5153L18.297 1.59641ZM40.9196 46.501C40.9196 46.498 40.9171 46.4955 40.914 46.4955H19.1544C18.9243 46.4973 18.6986 46.4316 18.5054 46.3066C18.3122 46.1817 18.1598 46.0029 18.0671 45.7923C17.9745 45.5817 17.9455 45.3487 17.984 45.1219C18.0224 44.8951 18.1264 44.6845 18.2833 44.5161L27.5208 34.5973C27.8391 34.2572 28.2238 33.9862 28.6512 33.8008C29.0786 33.6155 29.5396 33.5199 30.0055 33.5199C30.4714 33.5199 30.9323 33.6155 31.3597 33.8008C31.7871 33.9862 32.1719 34.2572 32.4902 34.5973L41.788 44.5216C41.9465 44.6896 42.052 44.9004 42.0916 45.1279C42.1311 45.3553 42.1028 45.5894 42.0103 45.8009C41.9177 46.0125 41.765 46.1921 41.5711 46.3176C41.3786 46.442 41.1541 46.5077 40.925 46.5065C40.922 46.5065 40.9196 46.5041 40.9196 46.501V46.501ZM60.0959 42.0686C60.0937 42.4073 59.99 42.7376 59.7982 43.0168C59.6064 43.2961 59.3353 43.5115 59.0198 43.6352C58.7043 43.759 58.3589 43.7854 58.0283 43.7111C57.6976 43.6368 57.3968 43.4652 57.1646 43.2184L47.7636 33.2486C46.8189 32.2467 45.5029 31.6788 44.1259 31.6788H34.7776C34.3827 31.6809 33.9957 31.5673 33.6646 31.3521C33.3335 31.1369 33.0727 30.8294 32.9145 30.4678C32.7563 30.1061 32.7075 29.706 32.7743 29.3169C32.841 28.9279 33.0204 28.5669 33.2901 28.2785L57.1537 2.90506C57.3851 2.65704 57.6857 2.48423 58.0166 2.40904C58.3475 2.33386 58.6933 2.35977 59.0093 2.48342C59.3252 2.60707 59.5967 2.82274 59.7885 3.10247C59.9803 3.3822 60.0836 3.71307 60.0849 4.05217L60.0959 42.0686Z" fill="#000000"/></svg>`;
+
+        // **AWAIT** a conversão do SVG para PNG
+        const pngDataUri = await convertSvgToPngDataUri(svgString, 30, 25);
+
+        // Adiciona a imagem PNG convertida
+        doc.addImage(pngDataUri, 'PNG', (pageWidth / 2) - 15, 40, 30, 25);
+
+        // O resto do código continua igual...
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(20);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Relatório de Apuração Anual de Resultados', pageWidth / 2, 95, { align: 'center' });
+        doc.setFontSize(11);
+        doc.setTextColor(80);
+        doc.text(`Contribuinte: ${user.email}`, pageWidth / 2, 110, { align: 'center' });
+        doc.setDrawColor(220, 220, 220);
+        doc.line(30, 125, pageWidth - 30, 125);
+        let finalY = 140;
+
+        if (document.getElementById('include-ir-summary').checked) {
+            finalY = drawKpiBoxes(doc, finalY) + 20;
+        }
+        
+        
+        // --- 3. TABELA MENSAL ---
+    if (document.getElementById('include-ir-monthly').checked) {
+        const head = [['Mês', 'Resultado (USD)', 'Resultado (BRL)']];
+        const body = finalReportData_IR.map(row => [
+            `${["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"][parseInt(row.mes.split('-')[1])-1]}/${row.mes.split('-')[0]}`,
+            formatCurrency(row.resultado_liquido_usd, 'USD'),
+            formatCurrency(row.resultado_liquido_brl)
+        ]);
+
+        doc.autoTable({
+            head: head,
+            body: body,
+            startY: finalY,
+            theme: 'plain', // Tema limpo, sem muitas linhas
+            styles: {
+                font: 'helvetica',
+                lineWidth: 0,
+                cellPadding: { top: 6, right: 10, bottom: 6, left: 10 }
+            },
+            headStyles: {
+                fillColor: [240, 240, 240], // Fundo cinza claro para o cabeçalho
+                textColor: [0, 0, 0],
+                fontStyle: 'bold',
+                halign: 'center'
+            },
+            bodyStyles: {
+                textColor: [50, 50, 50],
+                halign: 'center'
+            },
+            // Remove as linhas alternadas
+            alternateRowStyles: undefined,
+            didParseCell: function(data) {
+                // Centraliza apenas o conteúdo do cabeçalho
+                if (data.row.section === 'head') {
+                    data.cell.styles.halign = 'center';
+                } else {
+                     // Alinha a primeira coluna à esquerda e as outras à direita
+                    if (data.column.index > 0) {
+                        data.cell.styles.halign = 'center';
+                    }
+                }
+            }
+        });
+        finalY = doc.autoTable.previous.finalY + 20;
+    }
+
+    // --- 4. TABELA DE DETALHES (Opcional) ---
+    if (document.getElementById('include-ir-details').checked) {
+        if (finalY > 400) doc.addPage(); // Adiciona nova página se não houver espaço
+        
+        const head = [['Data', 'Ativo', 'Resultado (USD)', 'Resultado (BRL)']];
+        const body = allProcessedTrades_IR.map(t => [
+            new Date(t.data_iso + 'T00:00:00Z').toLocaleDateString('pt-BR'),
+            t.ativo,
+            formatCurrency(t.resultado_liquido_usd, 'USD'),
+            formatCurrency(t.resultado_liquido_brl)
+        ]);
+
+        doc.autoTable({
+            head: head,
+            body: body,
+            startY: finalY > 400 ? 40 : finalY,
+            // (Reutilize os estilos da tabela anterior para consistência)
+             theme: 'plain',
+             headStyles: { fillColor: [240, 240, 240], textColor: [0,0,0], fontStyle: 'bold' },
+             bodyStyles: { textColor: [50, 50, 50] }
+        });
+    }
+
+  addPdfHeaderFooter(doc);
+        doc.save(`Relatorio_IR_${user.email.split('@')[0]}.pdf`);
+
+    } catch (error) {
+        console.error("Erro ao gerar o PDF:", error);
+        alert("Ocorreu um erro ao gerar a imagem do logo para o PDF. Tente novamente.");
+    }
+}
+
+    async function generateProfessionalPDF_Cambial() { // A função agora é ASYNC
+    if (Object.keys(cambialKpiData).length === 0) {
+        alert('Dados não processados. Por favor, gere o relatório primeiro.');
+        return;
+    }
+
+    try {
+        // Usar as mesmas unidades do outro PDF para consistência
+        const doc = new jsPDF({
+            orientation: 'p',
+            unit: 'px',
+            format: 'a4'
+        });
+
+        const user = auth.currentUser;
+        const pageWidth = doc.internal.pageSize.getWidth();
+
+        // --- 1. CABEÇALHO COM LOGO (copiado da função de IR) ---
+        const svgString = `<svg viewBox="0 0 59.8 45.9" xmlns="http://www.w3.org/2000/svg"><path d="M4.76369 -0.719727C2.13278 -0.719727 0 1.41305 0 4.04396V4.04396C0.00217239 3.70526 0.105853 3.37498 0.297665 3.09573C0.489477 2.81649 0.760619 2.60109 1.07611 2.47733C1.3916 2.35357 1.73695 2.32713 2.06762 2.40142C2.39829 2.47571 2.6991 2.64732 2.93124 2.89411L12.335 12.8644C13.2797 13.866 14.5956 14.4337 15.9724 14.4337H25.321C25.7157 14.4314 26.1025 14.5448 26.4334 14.7599C26.7644 14.975 27.0249 15.2823 27.1829 15.6438C27.3409 16.0054 27.3894 16.4053 27.3224 16.794C27.2553 17.1828 27.0757 17.5434 26.8058 17.8313L2.93398 43.2184C2.70202 43.4662 2.40099 43.6387 2.06985 43.7135C1.7387 43.7884 1.3927 43.7622 1.07662 43.6383C0.760551 43.5144 0.488961 43.2986 0.297012 43.0187C0.105064 42.7389 0.00159475 42.4079 0 42.0686V42.0686C0 44.6587 2.09968 46.7584 4.68977 46.7584H55.1698C57.9313 46.7584 60.1698 44.5198 60.1698 41.7584V4.28028C60.1698 1.51886 57.9313 -0.719727 55.1698 -0.719727H4.76369ZM18.297 1.59641C18.1396 1.42755 18.0354 1.2162 17.9972 0.988633C17.9591 0.761063 17.9887 0.527307 18.0824 0.316417C18.1761 0.105528 18.3297 -0.073197 18.5242 -0.197543C18.7187 -0.321889 18.9455 -0.386374 19.1763 -0.382983H40.9415C41.1711 -0.38424 41.3961 -0.318396 41.5888 -0.193551C41.7814 -0.0687055 41.9334 0.109697 42.026 0.319715C42.1185 0.529733 42.1476 0.762208 42.1097 0.988546C42.0718 1.21488 41.9686 1.42522 41.8126 1.59367L32.5669 11.5153C32.2486 11.8553 31.8638 12.1264 31.4364 12.3117C31.009 12.497 30.5481 12.5926 30.0822 12.5926C29.6163 12.5926 29.1553 12.497 28.7279 12.3117C28.3005 12.1264 27.9158 11.8553 27.5975 11.5153L18.297 1.59641ZM40.9196 46.501C40.9196 46.498 40.9171 46.4955 40.914 46.4955H19.1544C18.9243 46.4973 18.6986 46.4316 18.5054 46.3066C18.3122 46.1817 18.1598 46.0029 18.0671 45.7923C17.9745 45.5817 17.9455 45.3487 17.984 45.1219C18.0224 44.8951 18.1264 44.6845 18.2833 44.5161L27.5208 34.5973C27.8391 34.2572 28.2238 33.9862 28.6512 33.8008C29.0786 33.6155 29.5396 33.5199 30.0055 33.5199C30.4714 33.5199 30.9323 33.6155 31.3597 33.8008C31.7871 33.9862 32.1719 34.2572 32.4902 34.5973L41.788 44.5216C41.9465 44.6896 42.052 44.9004 42.0916 45.1279C42.1311 45.3553 42.1028 45.5894 42.0103 45.8009C41.9177 46.0125 41.765 46.1921 41.5711 46.3176C41.3786 46.442 41.1541 46.5077 40.925 46.5065C40.922 46.5065 40.9196 46.5041 40.9196 46.501V46.501ZM60.0959 42.0686C60.0937 42.4073 59.99 42.7376 59.7982 43.0168C59.6064 43.2961 59.3353 43.5115 59.0198 43.6352C58.7043 43.759 58.3589 43.7854 58.0283 43.7111C57.6976 43.6368 57.3968 43.4652 57.1646 43.2184L47.7636 33.2486C46.8189 32.2467 45.5029 31.6788 44.1259 31.6788H34.7776C34.3827 31.6809 33.9957 31.5673 33.6646 31.3521C33.3335 31.1369 33.0727 30.8294 32.9145 30.4678C32.7563 30.1061 32.7075 29.706 32.7743 29.3169C32.841 28.9279 33.0204 28.5669 33.2901 28.2785L57.1537 2.90506C57.3851 2.65704 57.6857 2.48423 58.0166 2.40904C58.3475 2.33386 58.6933 2.35977 59.0093 2.48342C59.3252 2.60707 59.5967 2.82274 59.7885 3.10247C59.9803 3.3822 60.0836 3.71307 60.0849 4.05217L60.0959 42.0686Z" fill="#000000"/></svg>`;
+        const pngDataUri = await convertSvgToPngDataUri(svgString, 30, 25);
+        doc.addImage(pngDataUri, 'PNG', (pageWidth / 2) - 15, 40, 30, 25);
+
+        // --- 2. TÍTULO E SUBTÍTULO (centralizado) ---
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(20);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Relatório de Envios e Retiradas', pageWidth / 2, 95, { align: 'center' });
+        doc.setFontSize(11);
+        doc.setTextColor(80);
+        doc.text(`Contribuinte: ${user.email}`, pageWidth / 2, 110, { align: 'center' });
+        doc.setDrawColor(220, 220, 220);
+        doc.line(30, 125, pageWidth - 30, 125);
+        let finalY = 140;
+
+        // --- 3. RESUMO GERAL ---
+        if (document.getElementById('include-cambial-summary').checked) {
+            const kpi = cambialKpiData;
+            
+            // Usar autoTable para um layout mais limpo e consistente
+            doc.autoTable({
+                body: [
+                    ['Variação Cambial Total:', formatCurrency(kpi.lucroPrejuizoTotal)],
+                    ['Imposto Devido sobre Retiradas:', formatCurrency(kpi.impostoDevido)],
+                    ['Saldo Atual (USD):', formatCurrency(kpi.saldoUSD, 'USD')],
+                    ['Saldo Atual (BRL):', formatCurrency(kpi.custoSaldoBRL)],
+                ],
+                startY: finalY,
+                theme: 'plain',
+                styles: {
+                    font: 'helvetica',
+                    cellPadding: { top: 4, right: 5, bottom: 4, left: 5 }
+                },
+                columnStyles: {
+                    0: { fontStyle: 'bold', halign: 'left' },
+                    1: { halign: 'center' }
+                }
+            });
+            finalY = doc.autoTable.previous.finalY + 20;
+        }
+
+        // --- 4. TABELA DE TRANSAÇÕES ---
+        const head = [cambialExportData.headers];
+        const body = cambialExportData.data.map(row => Object.values(row).map(val => typeof val === 'number' ? val.toFixed(2) : val));
+        
+        doc.autoTable({
+            head: head,
+            body: body,
+            startY: finalY,
+            theme: 'plain',
+            styles: {
+                font: 'helvetica',
+                lineWidth: 0,
+                cellPadding: { top: 6, right: 10, bottom: 6, left: 10 }
+            },
+            headStyles: {
+                fillColor: [240, 240, 240],
+                textColor: [0, 0, 0],
+                fontStyle: 'bold',
+                halign: 'center'
+            },
+            bodyStyles: {
+                textColor: [50, 50, 50],
+                halign: 'center'
+            },
+            alternateRowStyles: undefined,
+            didParseCell: function(data) {
+                if (data.row.section !== 'head') {
+                    if (data.column.index > 2) { // Alinhar colunas numéricas à direita
+                        data.cell.styles.halign = 'center';
+                    }
+                }
+            }
+        });
+
+        addPdfHeaderFooter(doc);
+        doc.save(`Relatorio_Cambial_${user.email.split('@')[0]}.pdf`);
+
+    } catch (error) {
+        console.error("Erro ao gerar o PDF Cambial:", error);
+        alert("Ocorreu um erro ao gerar o PDF. Tente novamente.");
+    }
+}
+
+// --- Bloco final para adicionar event listeners ---
+document.addEventListener('DOMContentLoaded', () => {
+    signInButton?.addEventListener('click', handleSignIn);
+    registerButton?.addEventListener('click', handleRegistration);
+    signOutButton?.addEventListener('click', () => signOut(auth));
+    logoutFromNoAccessBtn?.addEventListener('click', () => signOut(auth));
+    forgotPasswordLink?.addEventListener('click', handlePasswordReset);
+    goToRegisterLink?.addEventListener('click', (e) => { e.preventDefault(); loginScreen.style.display = 'none'; registerScreen.style.display = 'flex'; });
+    goToLoginLink?.addEventListener('click', (e) => { e.preventDefault(); registerScreen.style.display = 'none'; loginScreen.style.display = 'flex'; });
+    acceptTermsBtn?.addEventListener('click', handleAcceptTerms);
+    declineTermsBtn?.addEventListener('click', () => signOut(auth));
+    document.getElementById('main-tab-cambial')?.addEventListener('click', () => showMainTab('cambial'));
+    document.getElementById('main-tab-ir')?.addEventListener('click', () => showMainTab('ir'));
+    document.getElementById('main-tab-wrapped')?.addEventListener('click', () => showMainTab('wrapped'));
+    document.getElementById('add-trans-button')?.addEventListener('click', handleSaveTransaction);
+    document.getElementById('cancel-edit-button')?.addEventListener('click', cancelEdit);
+    document.getElementById('process-cambial-button')?.addEventListener('click', handleProcessCambial);
+    tradesFileInput_IR?.addEventListener('change', handleFileSelect_IR);
+    processButton_IR?.addEventListener('click', processFiles_IR);
+    closeModalButton_IR?.addEventListener('click', closeTradesModal_IR);
+    modal_IR?.addEventListener('click', (e) => { if (e.target === modal_IR) closeTradesModal_IR(); });
+    closeExportModalBtn?.addEventListener('click', closeExportModal);
+    exportModal?.addEventListener('click', (e) => { if (e.target === exportModal) closeExportModal(); });
+    openTutorialButton?.addEventListener('click', startTour);
+});
+
+// Funções que precisam ser globais para botões dinâmicos
+window.editTransaction = editTransaction;
+window.removeTransaction = removeTransaction;
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+/* Carrossel 3D Circular - Efeitos baseados em CSS custom properties */
+
+.carousel3dContainer {
+  perspective: 1200px;
+  perspective-origin: center;
+  transform-style: preserve-3d;
+  overflow: visible;
+}
+
+.carousel3dCard {
+  position: relative;
+  transform: 
+    rotateY(calc(var(--offset, 0) * 50deg))
+    translateX(calc(var(--direction, 0) * -5rem))
+    translateZ(calc(var(--abs-offset, 0) * -30rem))
+    scale(calc(1 + var(--abs-offset, 0) * -0.15));
+  filter: blur(calc(var(--abs-offset, 0) * 1rem));
+  opacity: var(--opacity, 1);
+  z-index: calc(100 - var(--abs-offset, 0) * 10);
+  transition: transform 300ms ease, filter 300ms ease, opacity 300ms ease, z-index 0ms;
+  will-change: transform, filter, opacity, z-index;
+}
+
+.carousel3dCard[data-visible="false"] {
+  opacity: 0 !important;
+  pointer-events: none;
+}
