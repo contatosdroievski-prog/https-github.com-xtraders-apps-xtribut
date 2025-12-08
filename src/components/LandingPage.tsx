@@ -4,6 +4,7 @@ import { ArrowRight, CheckCircle, TrendingUp, Shield, BookOpen, Calculator, Doll
 import { LogoHeader } from './Logo';
 import { Carousel3D } from './Carousel3D';
 import { Lightbox } from './Lightbox';
+import { RDStationForm } from './RDStationForm';
 
 import printCambial from '../assets/print_cambial.png';
 import printCalendario from '../assets/print_calendario.png';
@@ -97,9 +98,7 @@ export function LandingPage({ onLogin, onRegister }: LandingPageProps) {
                                 Aprenda a declarar e pagar seus impostos de CFD e Forex corretamente.
                                 Evite multas pesadas da Receita Federal e automatize seus cálculos com nossa plataforma exclusiva.
                             </p>
-                            import {RDStationForm} from './RDStationForm';
 
-                            // ... (inside component)
 
                             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                                 <RDStationForm />
