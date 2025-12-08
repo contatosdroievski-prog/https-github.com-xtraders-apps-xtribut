@@ -21,40 +21,14 @@ import {
   Legend
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import {
+  ProcessedTrade,
+  MonthlyResult,
+  IrKpiData,
+  apurarImposto
+} from '../../lib/calculations/ir';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
-
-interface ProcessedTrade {
-  data_iso: string;
-  mes_ano: string;
-  resultado_liquido_usd: number;
-  resultado_liquido_brl: number;
-  [key: string]: any;
-}
-
-interface MonthlyResult {
-  mes: string;
-  resultado_liquido_usd: number;
-  resultado_liquido_brl: number;
-}
-
-interface IrKpiData {
-  totalUSD: number;
-  totalBRL: number;
-  impostoAnual: number;
-  resultadoAposDarf: number;
-}
-
-interface PlatformInfo {
-  name: string;
-  map: {
-    data_fechamento: string;
-    resultado: string;
-    comissao: string;
-    swap: string;
-    ativo: string;
-  };
-}
 
 export function IrTab() {
   const { setProcessedTrades } = useApp();
@@ -86,7 +60,7 @@ export function IrTab() {
       skipEmptyLines: true,
       complete: (results) => {
         let dataRows = results.data as string[][];
-        
+
         if (dataRows.length > 1 && dataRows[0][0] && dataRows[0][0].toLowerCase().includes('posi')) {
           dataRows.shift();
         }
@@ -140,10 +114,11 @@ export function IrTab() {
       await Promise.all(uniqueDates.map(date => fetchBcbRateForDate(date)));
 
       const result = apurarImposto(tradesData, getRatesMapCompra());
-      
+
       setResults(result);
-      setProcessedTrades(result.processedTrades);
-      
+      // Cast to any to avoid strict type check for now, or map to Trade type if possible
+      setProcessedTrades(result.processedTrades as any);
+
       toast.success('Dados processados com sucesso!');
     } catch (error: any) {
       toast.error(`Ocorreu um erro no cálculo: ${error.message}`);
@@ -195,12 +170,12 @@ export function IrTab() {
         <div className="p-4 rounded-lg bg-black/20 border-l-4 border-[#D4AF37] mb-8">
           <div className="flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-[#D4AF37] flex-shrink-0 mt-0.5" />
-            
-              <div>
+
+            <div>
               <p className="font-semibold text-[#D4AF37]">MUITO IMPORTANTE:</p>
               <p className="mt-1 text-sm text-muted">Certifique-se de que o relatório está no formato CSV (separado por vírgula). Neste campo NÃO são considerados os envios e retiradas de capital (margem para operar).
               </p>
-              
+
             </div>
           </div>
         </div>
@@ -217,9 +192,9 @@ export function IrTab() {
       </Card>
 
       {results && (
-        <IrResultsWrapper 
-          kpi={results.kpi} 
-          monthly={results.monthly} 
+        <IrResultsWrapper
+          kpi={results.kpi}
+          monthly={results.monthly}
           platform={results.platform}
           processedTrades={results.processedTrades}
           onMonthClick={openTradesModal}
@@ -229,7 +204,7 @@ export function IrTab() {
       )}
 
       {modalMonth && (
-        <TradesModal 
+        <TradesModal
           monthName={modalMonth.monthName}
           trades={modalMonth.trades}
           onClose={closeTradesModal}
@@ -238,190 +213,14 @@ export function IrTab() {
     </div>
   );
 }
-
-function identifyPlatform(data: any[]): PlatformInfo | null {
-  if (!data || data.length === 0) {
-    throw new Error("O arquivo de operações está vazio.");
-  }
-
-  const columns = new Set(Object.keys(data[0]).map(c => c.toLowerCase().trim().replace(/\s+/g, ' ')));
-
-  if (columns.has('position') && columns.has('ativo') && columns.has('horário') && columns.has('lucro')) {
-    return {
-      name: 'Metatrader 5 (Posições)',
-      map: {
-        data_fechamento: 'Horário',
-        resultado: 'Lucro',
-        comissao: 'Comissão',
-        swap: 'Swap',
-        ativo: 'Ativo'
-      }
-    };
-  }
-
-  if (columns.has('n. do trade') && columns.has('datade fechamento')) {
-    return {
-      name: 'Metatrader 5 (Negócios)',
-      map: {
-        data_fechamento: 'Datade  Fechamento',
-        resultado: 'Resultado',
-        comissao: 'Comissão',
-        swap: 'Swap',
-        ativo: 'Ativo'
-      }
-    };
-  }
-
-  if (columns.has('position') && columns.has('type') && columns.has('deal')) {
-    return {
-      name: 'Metatrader 5 (Inglês)',
-      map: {
-        data_fechamento: 'Time',
-        resultado: 'Profit',
-        comissao: 'Commission',
-        swap: 'Swap',
-        ativo: 'Symbol'
-      }
-    };
-  }
-
-  if (columns.has('ticket') && columns.has('open time') && columns.has('close time')) {
-    return {
-      name: 'Metatrader 4',
-      map: {
-        data_fechamento: 'Close Time',
-        resultado: 'Profit',
-        comissao: 'Commission',
-        swap: 'Swap',
-        ativo: 'Item'
-      }
-    };
-  }
-
-  if (columns.has('tradeid') && columns.has('direction') && columns.has('close time')) {
-    return {
-      name: 'CTrader',
-      map: {
-        data_fechamento: 'Close Time',
-        resultado: 'Net Profit',
-        comissao: 'Commissions',
-        swap: 'Swap',
-        ativo: 'Symbol'
-      }
-    };
-  }
-
-  return null;
-}
-
-function apurarImposto(trades: any[], quotesMap: Map<string, number>): {
-  monthly: MonthlyResult[];
-  platform: string;
-  processedTrades: ProcessedTrade[];
-  impostoAnual: number;
-  kpi: IrKpiData;
-} {
-  const platformInfo = identifyPlatform(trades);
-  if (!platformInfo) {
-    throw new Error("Plataforma de trading não identificada.");
-  }
-
-  const normalize = (obj: any, map: any) => {
-    const newObj: any = {};
-    for (const key in obj) {
-      const nKey = key.toLowerCase().trim().replace(/\s+/g, ' ');
-      const sKey = Object.keys(map).find(k => map[k].toLowerCase().trim().replace(/\s+/g, ' ') === nKey);
-      if (sKey) {
-        newObj[sKey] = obj[key];
-      } else {
-        newObj[key.toLowerCase().trim().replace(/\s+/g, '_')] = obj[key];
-      }
-    }
-    return newObj;
-  };
-
-  let processedTrades = trades.map(t => normalize(t, platformInfo.map));
-
-  if (quotesMap.size === 0) {
-    throw new Error("O mapa de cotações está vazio.");
-  }
-
-  processedTrades = processedTrades.map(trade => {
-    const parseCurrency = (v: any) => parseFloat(String(v || '0').replace(/\s/g, '').replace(',', '.')) || 0;
-    const resultado_liquido_usd = parseCurrency(trade.resultado);
-
-    let date: Date;
-    const dateStr = (trade.data_fechamento || '').split(' ')[0];
-
-    if (dateStr.includes('/')) {
-      const p = dateStr.split('/');
-      date = new Date(Date.UTC(parseInt(p[2]), parseInt(p[1]) - 1, parseInt(p[0])));
-    } else {
-      date = new Date(dateStr.replace(/\./g, '-') + 'T00:00:00Z');
-    }
-
-    if (isNaN(date.getTime())) {
-      throw new Error(`Data inválida: ${trade.data_fechamento}`);
-    }
-
-    const isoDate = date.toISOString().split('T')[0];
-    const quote = quotesMap.get(isoDate);
-    const resultado_liquido_brl = quote ? resultado_liquido_usd * quote : 0;
-
-    return {
-      ...trade,
-      data_iso: isoDate,
-      mes_ano: isoDate ? isoDate.substring(0, 7) : null,
-      resultado_liquido_usd,
-      resultado_liquido_brl
-    };
-  }).filter(t => t.mes_ano);
-
-  const monthlyGroups = processedTrades.reduce((acc: any, trade) => {
-    const month = trade.mes_ano;
-    if (!acc[month]) {
-      acc[month] = { r_brl: 0, r_usd: 0 };
-    }
-    acc[month].r_brl += trade.resultado_liquido_brl;
-    acc[month].r_usd += trade.resultado_liquido_usd;
-    return acc;
-  }, {});
-
-  const apuracaoMensal = Object.keys(monthlyGroups).sort().map(month => ({
-    mes: month,
-    resultado_liquido_brl: monthlyGroups[month].r_brl,
-    resultado_liquido_usd: monthlyGroups[month].r_usd
-  }));
-
-  const lucro_total_anual_brl = processedTrades.reduce((sum, trade) => sum + trade.resultado_liquido_brl, 0);
-  const impostoAnual = lucro_total_anual_brl > 0 ? lucro_total_anual_brl * 0.15 : 0;
-
-  const totalUSD = apuracaoMensal.reduce((s, r) => s + r.resultado_liquido_usd, 0);
-  const totalBRL = apuracaoMensal.reduce((s, r) => s + r.resultado_liquido_brl, 0);
-  const resultadoAposDarf = totalBRL - impostoAnual;
-
-  return {
-    monthly: apuracaoMensal,
-    platform: platformInfo.name,
-    processedTrades,
-    impostoAnual,
-    kpi: {
-      totalUSD,
-      totalBRL,
-      impostoAnual,
-      resultadoAposDarf
-    }
-  };
-}
-
-function IrResults({ 
-  kpi, 
-  monthly, 
+function IrResults({
+  kpi,
+  monthly,
   platform,
   onMonthClick,
   onExportClick
-}: { 
-  kpi: IrKpiData; 
+}: {
+  kpi: IrKpiData;
   monthly: MonthlyResult[];
   platform: string;
   onMonthClick: (mes: string, monthName: string) => void;
@@ -455,7 +254,7 @@ function IrResults({
         font: {
           size: 18,
           family: 'Sora',
-          weight: '600' as const
+          weight: 'bold' as const
         },
         align: 'start' as const,
         padding: {
@@ -551,9 +350,8 @@ function IrResults({
                 <div
                   key={row.mes}
                   onClick={() => onMonthClick(row.mes, monthName)}
-                  className={`glass-card p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 ${
-                    isProfit ? 'border-positive/30 hover:border-positive' : 'border-negative/30 hover:border-negative'
-                  }`}
+                  className={`glass-card p-4 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-xl border-2 ${isProfit ? 'border-positive/30 hover:border-positive' : 'border-negative/30 hover:border-negative'
+                    }`}
                 >
                   <div className="text-sm mb-2 text-muted">{monthName}</div>
                   <div className={`mb-1 ${isProfit ? 'text-positive' : 'text-negative'}`}>
@@ -583,12 +381,12 @@ function IrResults({
   );
 }
 
-function TradesModal({ 
-  monthName, 
-  trades, 
-  onClose 
-}: { 
-  monthName: string; 
+function TradesModal({
+  monthName,
+  trades,
+  onClose
+}: {
+  monthName: string;
   trades: ProcessedTrade[];
   onClose: () => void;
 }) {
@@ -597,16 +395,16 @@ function TradesModal({
     // Salvar o valor atual do overflow
     const originalOverflow = document.body.style.overflow;
     const originalPaddingRight = document.body.style.paddingRight;
-    
+
     // Calcular largura da scrollbar
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    
+
     // Bloquear scroll e compensar a largura da scrollbar
     document.body.style.overflow = 'hidden';
     if (scrollbarWidth > 0) {
       document.body.style.paddingRight = `${scrollbarWidth}px`;
     }
-    
+
     // Restaurar quando o modal fechar
     return () => {
       document.body.style.overflow = originalOverflow;
@@ -618,15 +416,15 @@ function TradesModal({
   const totalBRL = trades.reduce((sum, t) => sum + t.resultado_liquido_brl, 0);
 
   const modalContent = (
-    <div 
+    <div
       className="fixed inset-0 z-[1500] flex items-center justify-center p-4 sm:p-6 overflow-auto"
-      style={{ 
+      style={{
         backgroundColor: 'rgba(13, 13, 13, 0.8)',
         backdropFilter: 'blur(10px)'
       }}
       onClick={onClose}
     >
-      <div 
+      <div
         className="w-full max-w-lg sm:max-w-xl md:max-w-2xl lg:max-w-3xl my-auto"
         style={{
           backgroundColor: 'var(--surface-card)',
@@ -690,16 +488,16 @@ function TradesModal({
   return createPortal(modalContent, document.body);
 }
 
-function IrResultsWrapper({ 
-  kpi, 
-  monthly, 
+function IrResultsWrapper({
+  kpi,
+  monthly,
   platform,
   processedTrades,
   onMonthClick,
   isExportModalOpen,
   setIsExportModalOpen
-}: { 
-  kpi: IrKpiData; 
+}: {
+  kpi: IrKpiData;
   monthly: MonthlyResult[];
   platform: string;
   processedTrades: ProcessedTrade[];
@@ -722,7 +520,7 @@ function IrResultsWrapper({
         kpi,
         options
       );
-      
+
       toast.success('PDF gerado com sucesso!');
     } catch (error) {
       console.error('Erro ao gerar PDF:', error);
@@ -733,14 +531,14 @@ function IrResultsWrapper({
 
   return (
     <>
-      <IrResults 
+      <IrResults
         kpi={kpi}
         monthly={monthly}
         platform={platform}
         onMonthClick={onMonthClick}
         onExportClick={() => setIsExportModalOpen(true)}
       />
-      <ExportModal 
+      <ExportModal
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         type="ir"

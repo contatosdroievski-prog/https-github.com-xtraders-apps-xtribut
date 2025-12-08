@@ -8,18 +8,19 @@ import { NoAccessScreen } from './components/NoAccessScreen';
 import { TermsModal } from './components/TermsModal';
 import { LoadingOverlay } from './components/LoadingOverlay';
 import { MainApplication } from './components/MainApplication';
+import { LandingPage } from './components/LandingPage';
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadingMessage, setLoadingMessage] = useState('Carregando plataforma...');
-  const [screen, setScreen] = useState<'login' | 'register' | 'no-access' | 'terms' | 'main'>('login');
+  const [screen, setScreen] = useState<'landing' | 'login' | 'register' | 'no-access' | 'terms' | 'main'>('landing');
   const [showMain, setShowMain] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       console.log('Estado de autenticação mudou:', currentUser ? currentUser.email : 'sem usuário');
-      
+
       if (currentUser) {
         console.log('Usuário autenticado, iniciando verificações...');
         setUser(currentUser);
@@ -37,7 +38,7 @@ export default function App() {
             console.log('Termos aceitos, verificando pagamento...');
             const hasActivePayment = await checkUserPaymentStatus(currentUser);
             console.log('Pagamento ativo:', hasActivePayment);
-            
+
             if (hasActivePayment) {
               console.log('Iniciando aplicação principal...');
               showMainApplication();
@@ -57,12 +58,17 @@ export default function App() {
           setLoading(false);
         }
       } else {
-        console.log('Usuário não autenticado, mostrando tela de login');
+        console.log('Usuário não autenticado, mostrando landing page');
         setUser(null);
-        setScreen('login');
+        // If we are already on login or register, don't force back to landing automatically
+        // unless it's the initial load. But for simplicity, let's keep the user where they are
+        // if they are navigating between login/register.
+        // However, if they just logged out, we probably want to go to landing.
+        // For now, let's default to landing if not already on login/register.
+        setScreen(prev => (prev === 'login' || prev === 'register') ? prev : 'landing');
         setLoading(false);
         setShowMain(false);
-        document.body.style.overflow = 'hidden';
+        document.body.style.overflow = 'auto'; // Landing page needs scroll
       }
     });
 
@@ -77,7 +83,7 @@ export default function App() {
       where('buyerEmail', '==', user.email),
       where('status', '==', 'paid')
     );
-    
+
     try {
       const querySnapshot = await getDocs(q);
       return !querySnapshot.empty;
@@ -95,14 +101,14 @@ export default function App() {
     setTimeout(() => {
       console.log('Fade out iniciando...');
       setScreen('main');
-      
+
       setTimeout(() => {
         console.log('Mostrando conteúdo principal...');
         setLoading(false);
         setShowMain(true);
         document.body.style.overflow = 'auto';
         console.log('Aplicação carregada com sucesso!');
-        
+
         // O tour será iniciado automaticamente pelo hook useTour() no MainApplication
         // se o usuário ainda não tiver visto o tutorial
       }, 500);
@@ -129,6 +135,12 @@ export default function App() {
 
   return (
     <>
+      {screen === 'landing' && (
+        <LandingPage
+          onLogin={() => setScreen('login')}
+          onRegister={() => setScreen('register')}
+        />
+      )}
       {screen === 'login' && <LoginScreen onSwitchToRegister={() => setScreen('register')} />}
       {screen === 'register' && <RegisterScreen onSwitchToLogin={() => setScreen('login')} />}
       {screen === 'no-access' && <NoAccessScreen />}

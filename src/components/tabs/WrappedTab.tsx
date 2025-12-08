@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import { formatCurrency } from '../../lib/utils/currency';
 import { useApp } from '../../lib/context/AppContext';
 import { Line } from 'react-chartjs-2';
@@ -22,6 +22,13 @@ import {
   CarouselPrevious,
   type CarouselApi
 } from '../ui/carousel';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import { Logo } from '../Logo';
 import styles from './WrappedTab.module.css';
 
@@ -118,11 +125,31 @@ function useCarousel3dOffsets(
 
 
 export function WrappedTab() {
-  const { processedTrades } = useApp();
+  const { processedTrades: allTrades } = useApp();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
   const [count, setCount] = useState(0);
   const cardRefs = useRef<{ [key: number]: HTMLDivElement | null }>({}); // Para efeitos 3D
+
+  // Year Filter Logic
+  const years = useMemo(() => {
+    if (!allTrades.length) return [new Date().getFullYear().toString()];
+    const uniqueYears = Array.from(new Set(allTrades.map(t => t.mes_ano.split('-')[0]))).sort().reverse();
+    return uniqueYears.length ? uniqueYears : [new Date().getFullYear().toString()];
+  }, [allTrades]);
+
+  const [selectedYear, setSelectedYear] = useState<string>(years[0]);
+
+  // Update selected year if available years change
+  useEffect(() => {
+    if (years.length > 0 && !years.includes(selectedYear)) {
+      setSelectedYear(years[0]);
+    }
+  }, [years, selectedYear]);
+
+  const processedTrades = useMemo(() => {
+    return allTrades.filter(t => t.mes_ano.startsWith(selectedYear));
+  }, [allTrades, selectedYear]);
 
   // Monitor carousel changes
   useEffect(() => {
@@ -139,7 +166,7 @@ export function WrappedTab() {
   // Aplica efeitos 3D no carrossel circular
   useCarousel3dOffsets(api, cardRefs, 7); // 7 cards no total
 
-  if (!processedTrades || processedTrades.length === 0) {
+  if (!allTrades || allTrades.length === 0) {
     return (
       <div className="text-center py-16 animate-fade-in-up">
         <div className="glass-card p-8 max-w-md mx-auto border-2 border-accent/30">
@@ -716,10 +743,26 @@ export function WrappedTab() {
   return (
     <section className="min-h-screen bg-transparent py-12 px-4 animate-fade-in-up">
       {/* Header Layer */}
-      <header className="text-center mb-12">
-        <h1 className="font-['Sora',sans-serif] font-extrabold text-[32px] sm:text-[40px] mb-3 bg-gradient-to-r from-[#D4AF37] via-[#F4E5B8] to-[#D4AF37] bg-clip-text text-transparent tracking-tight">
-          XTRADERS REPORT 2024
-        </h1>
+      <header className="text-center mb-12 relative z-50">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-3">
+          <h1 className="font-['Sora',sans-serif] font-extrabold text-[32px] sm:text-[40px] bg-gradient-to-r from-[#D4AF37] via-[#F4E5B8] to-[#D4AF37] bg-clip-text text-transparent tracking-tight">
+            XTRADERS REPORT
+          </h1>
+          <div className="w-32">
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <SelectTrigger className="bg-[#1A1A1A] border-[#333] text-[#D4AF37] font-['Sora',sans-serif] font-bold h-10 rounded-full px-4">
+                <SelectValue placeholder="Ano" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1A1A1A] border-[#333]">
+                {years.map(year => (
+                  <SelectItem key={year} value={year} className="text-white hover:bg-[#333] focus:bg-[#333] cursor-pointer font-['Sora',sans-serif]">
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
         <p className="font-['Sora',sans-serif] text-[14px] text-[#999] tracking-wide">
           Seu ano em números • Navegue pelos cards em formato stories
         </p>

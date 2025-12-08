@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
@@ -11,45 +11,40 @@ import { Transaction } from '../../lib/types';
 import { fetchBcbRateForDate, getRateForDate } from '../../lib/api/bcb';
 import { formatCurrency, formatCurrencyInput, parseCurrencyInput } from '../../lib/utils/currency';
 import { generateCambialPdf } from '../../lib/utils/pdf-export';
-import { toast } from 'sonner@2.0.3';
-import { format } from 'date-fns@4.1.0';
-import { ptBR } from 'date-fns@4.1.0/locale';
+import { toast } from 'sonner';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { ExportModal } from '../ExportModal';
 import { auth } from '../../lib/firebase';
-
-interface ProcessedRow {
-  date: Date;
-  type: string;
-  valueUSD: number;
-  cotacao: number;
-  valueBRL: number;
-  lucroPrejuizo: number;
-  saldoFinal: number;
-}
-
-interface CambialKpi {
-  saldoUSD: number;
-  custoSaldoBRL: number;
-  totalEnviosUSD: number;
-  totalRetiradoUSD: number;
-  totalEnviosBRL: number;
-  totalRetiradoBRL: number;
-  lucroPrejuizoTotal: number;
-  lucroTributavel: number;
-  impostoDevido: number;
-  valorNaoRetiradaBRL: number | null;
-  mostrarAlocarCard: boolean;
-  saldoFinalParaExibir: number;
-}
+import { useApp } from '../../lib/context/AppContext';
+import {
+  ProcessedRow,
+  CambialKpi,
+  processAndRenderCambial
+} from '../../lib/calculations/cambial';
 
 export function CambialTab() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const { withdrawals, setWithdrawals } = useApp();
+
+  // Convert context withdrawals (any[]) to Transaction[] with Date objects
+  const transactions = useMemo(() => {
+    return withdrawals.map(t => ({
+      ...t,
+      date: new Date(t.date)
+    })).sort((a, b) => a.date.getTime() - b.date.getTime());
+  }, [withdrawals]);
+
+  const setTransactions = (newTransactions: Transaction[]) => {
+    setWithdrawals(newTransactions);
+  };
+
   const [currentTransaction, setCurrentTransaction] = useState({
     date: '',
     type: 'Envio' as 'Envio' | 'Retirada' | 'Não Retirada',
     value: ''
   });
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [dateInputValue, setDateInputValue] = useState('');
   const [datePickerOpen, setDatePickerOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [results, setResults] = useState<{
@@ -60,16 +55,10 @@ export function CambialTab() {
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   // Sincronizar selectedDate com currentTransaction.date
-  useEffect(() => {
-    if (currentTransaction.date) {
-      setSelectedDate(new Date(currentTransaction.date + 'T00:00:00'));
-    } else {
-      setSelectedDate(undefined);
-    }
-  }, [currentTransaction.date]);
+
 
   // Determina se "Não Retirada" deve estar habilitado (apenas em 31/12)
-  const isNaoRetiradaEnabled = currentTransaction.date && 
+  const isNaoRetiradaEnabled = currentTransaction.date &&
     currentTransaction.date.substring(5) === '12-31';
 
   // Efeito para resetar o tipo se "Não Retirada" foi desabilitado
@@ -145,12 +134,15 @@ export function CambialTab() {
       type: trans.type,
       value: formatCurrencyInput(trans.value)
     });
+    setSelectedDate(trans.date);
+    setDateInputValue(format(trans.date, 'dd/MM/yyyy', { locale: ptBR }));
   };
 
   const cancelEdit = () => {
     setEditingIndex(null);
     setCurrentTransaction({ date: '', type: 'Envio', value: '' });
     setSelectedDate(undefined);
+    setDateInputValue('');
   };
 
   const removeTransaction = (index: number) => {
@@ -187,39 +179,44 @@ export function CambialTab() {
     <div className="space-y-6 animate-fade-in-up">
       <Card className="glass-card p-6" data-tour="add-transaction">
         <h3 className="mb-4">Adicionar Transação de Capital</h3>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
           <div>
             <Label>Data</Label>
             <div className="relative">
               <Input
                 placeholder="DD/MM/AAAA"
-                value={selectedDate ? format(selectedDate, 'dd/MM/yyyy', { locale: ptBR }) : ''}
+                value={dateInputValue}
                 onChange={(e) => {
                   const value = e.target.value;
-                  const cleaned = value.replace(/[^\d/]/g, '');
-                  
-                  let formatted = cleaned;
-                  if (cleaned.length >= 2 && cleaned.charAt(2) !== '/') {
-                    formatted = cleaned.slice(0, 2) + '/' + cleaned.slice(2);
-                  }
-                  if (formatted.length >= 5 && formatted.charAt(5) !== '/') {
-                    formatted = formatted.slice(0, 5) + '/' + formatted.slice(5);
-                  }
-                  formatted = formatted.slice(0, 10);
-                  
+                  const cleaned = value.replace(/[^\d]/g, '');
+
+                  let formatted = '';
+                  if (cleaned.length > 0) formatted += cleaned.substring(0, 2);
+                  if (cleaned.length >= 3) formatted += '/' + cleaned.substring(2, 4);
+                  if (cleaned.length >= 5) formatted += '/' + cleaned.substring(4, 8);
+
+                  setDateInputValue(formatted);
+
                   if (formatted.length === 10) {
                     const [day, month, year] = formatted.split('/').map(Number);
                     if (day && month && year && month <= 12 && day <= 31) {
                       const parsedDate = new Date(year, month - 1, day);
                       if (!isNaN(parsedDate.getTime()) && parsedDate <= new Date()) {
                         setSelectedDate(parsedDate);
-                        setCurrentTransaction({ 
-                          ...currentTransaction, 
+                        setCurrentTransaction(prev => ({
+                          ...prev,
                           date: format(parsedDate, 'yyyy-MM-dd')
-                        });
+                        }));
+                        return;
                       }
                     }
+                  }
+
+                  // Se a data for inválida ou incompleta, limpar o estado interno
+                  if (currentTransaction.date) {
+                    setSelectedDate(undefined);
+                    setCurrentTransaction(prev => ({ ...prev, date: '' }));
                   }
                 }}
                 className="bg-input-background border-border text-foreground pr-10"
@@ -233,8 +230,8 @@ export function CambialTab() {
                     <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                   </button>
                 </PopoverTrigger>
-                <PopoverContent 
-                  className="w-auto p-0 border-0 shadow-none bg-transparent" 
+                <PopoverContent
+                  className="w-auto p-0 border-0 shadow-none bg-transparent"
                   align="start"
                   side="bottom"
                   sideOffset={4}
@@ -247,6 +244,7 @@ export function CambialTab() {
                       const formattedDate = format(date, 'yyyy-MM-dd');
                       setCurrentTransaction({ ...currentTransaction, date: formattedDate });
                       setSelectedDate(date);
+                      setDateInputValue(format(date, 'dd/MM/yyyy', { locale: ptBR }));
                       setDatePickerOpen(false);
                     }}
                     disabled={(date) => date > new Date()}
@@ -312,8 +310,8 @@ export function CambialTab() {
             <div>
               <p className="font-semibold text-[#D4AF37]">MUITO IMPORTANTE:</p>
               <p className="mt-1 text-sm text-muted">
-                NÃO CONSIDERAR OU INFORMAR RETIRADAS DE LUCRO COM OS SEUS TRADES NESTE CAMPO. 
-                AQUI DEVE-SE INFORMAR SOMENTE O CAPITAL ORIGINALMENTE ENVIADO OU RETIRADO DO 
+                NÃO CONSIDERAR OU INFORMAR RETIRADAS DE LUCRO COM OS SEUS TRADES NESTE CAMPO.
+                AQUI DEVE-SE INFORMAR SOMENTE O CAPITAL ORIGINALMENTE ENVIADO OU RETIRADO DO
                 EXTERIOR (MARGEM PARA OPERAR).
               </p>
             </div>
@@ -339,7 +337,7 @@ export function CambialTab() {
                   {transactions.map((trans, index) => {
                     const cotacao = getRateForDate(trans.date, trans.type);
                     const totalBRL = cotacao ? trans.value * cotacao : null;
-                    
+
                     return (
                       <tr key={index}>
                         <td className="py-3 px-4 text-center">
@@ -392,8 +390,8 @@ export function CambialTab() {
       </div>
 
       {results && (
-        <CambialResultsWrapper 
-          kpi={results.kpi} 
+        <CambialResultsWrapper
+          kpi={results.kpi}
           processed={results.processed}
           isExportModalOpen={isExportModalOpen}
           setIsExportModalOpen={setIsExportModalOpen}
@@ -403,98 +401,7 @@ export function CambialTab() {
   );
 }
 
-function processAndRenderCambial(transactions: Transaction[]): { processed: ProcessedRow[], kpi: CambialKpi } {
-  let saldoUSD = 0;
-  let custoSaldoBRL = 0;
-  let totalEnviosUSD = 0;
-  let totalRetiradoUSD = 0;
-  let lucroPrejuizoTotal = 0;
-  let totalEnviosBRL = 0;
-  let totalRetiradoBRL = 0;
-  let lucroTributavel = 0;
-  let valorNaoRetiradaBRL: number | null = null;
-  let mostrarAlocarCard = false;
 
-  const processed: ProcessedRow[] = [];
-
-  for (const trans of transactions) {
-    const cotacaoDia = getRateForDate(trans.date, trans.type);
-    if (cotacaoDia === null) {
-      throw new Error(`Cotação não encontrada para a data ${trans.date.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}. Verifique sua conexão e tente novamente.`);
-    }
-
-    const valorDeMercadoBRL = trans.value * cotacaoDia;
-    const precoMedioAnterior = saldoUSD > 1e-6 ? custoSaldoBRL / saldoUSD : 0;
-    let custoOperacaoBRL = 0;
-    let lucroPrejuizoRow = 0;
-
-    if (trans.type === 'Envio') {
-      saldoUSD += trans.value;
-      custoSaldoBRL += valorDeMercadoBRL;
-      totalEnviosUSD += trans.value;
-      totalEnviosBRL += valorDeMercadoBRL;
-    } else {
-      // Retirada ou Não Retirada
-      if (trans.value > saldoUSD) {
-        throw new Error(`Saque (${formatCurrency(trans.value, 'USD')}) maior que o saldo na data.`);
-      }
-
-      custoOperacaoBRL = trans.value * precoMedioAnterior;
-      lucroPrejuizoRow = valorDeMercadoBRL - custoOperacaoBRL;
-      lucroPrejuizoTotal += lucroPrejuizoRow;
-
-      if (trans.type === 'Retirada' && lucroPrejuizoRow > 0) {
-        lucroTributavel += lucroPrejuizoRow;
-      }
-
-      if (trans.type === 'Não Retirada') {
-        custoSaldoBRL += (2 * lucroPrejuizoRow);
-        valorNaoRetiradaBRL = valorDeMercadoBRL;
-        if (trans.date.getUTCMonth() === 11 && trans.date.getUTCDate() === 31) {
-          mostrarAlocarCard = true;
-        }
-      } else {
-        // Retirada normal
-        totalRetiradoUSD += trans.value;
-        totalRetiradoBRL += valorDeMercadoBRL;
-        saldoUSD -= trans.value;
-        custoSaldoBRL -= custoOperacaoBRL;
-      }
-    }
-
-    processed.push({
-      date: trans.date,
-      type: trans.type,
-      valueUSD: trans.value,
-      cotacao: cotacaoDia,
-      valueBRL: valorDeMercadoBRL,
-      lucroPrejuizo: lucroPrejuizoRow,
-      saldoFinal: saldoUSD
-    });
-  }
-
-  const impostoDevido = lucroTributavel * 0.15;
-  const saldoBRLCalculado = custoSaldoBRL + lucroPrejuizoTotal;
-  const saldoFinalParaExibir = valorNaoRetiradaBRL !== null ? valorNaoRetiradaBRL : (saldoUSD < 1e-6 ? 0 : saldoBRLCalculado);
-
-  return {
-    processed,
-    kpi: {
-      saldoUSD,
-      custoSaldoBRL,
-      totalEnviosUSD,
-      totalRetiradoUSD,
-      totalEnviosBRL,
-      totalRetiradoBRL,
-      lucroPrejuizoTotal,
-      lucroTributavel,
-      impostoDevido,
-      valorNaoRetiradaBRL,
-      mostrarAlocarCard,
-      saldoFinalParaExibir
-    }
-  };
-}
 
 function CambialResults({ kpi, processed, onExportClick }: { kpi: CambialKpi, processed: ProcessedRow[], onExportClick: () => void }) {
   const kpiCards: { title: string; value: string; color: string; span?: 'full' }[] = [];
@@ -526,11 +433,11 @@ function CambialResults({ kpi, processed, onExportClick }: { kpi: CambialKpi, pr
   return (
     <div id="pdf-export-cambial" className="space-y-6 animate-fade-in-up">
       <h3 className="text-xl text-left">Resumo da Movimentação Cambial</h3>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {kpiCards.map((kpi, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className={`glass-card p-6 text-center hover:shadow-lg transition-shadow ${kpi.span === 'full' ? 'md:col-span-3' : ''}`}
           >
             <p className="text-xs uppercase tracking-wider text-muted mb-2">{kpi.title}</p>
@@ -591,12 +498,12 @@ function CambialResults({ kpi, processed, onExportClick }: { kpi: CambialKpi, pr
   );
 }
 
-function CambialResultsWrapper({ 
-  processed, 
+function CambialResultsWrapper({
+  processed,
   kpi,
   isExportModalOpen,
   setIsExportModalOpen
-}: { 
+}: {
   processed: ProcessedRow[];
   kpi: CambialKpi;
   isExportModalOpen: boolean;
@@ -606,7 +513,7 @@ function CambialResultsWrapper({
     try {
       const user = auth.currentUser;
       if (!user) {
-        toast('Usuário não autenticado', { 
+        toast('Usuário não autenticado', {
           description: 'Faça login para exportar relatórios',
           duration: 3000
         });
@@ -633,7 +540,7 @@ function CambialResultsWrapper({
         exportData,
         options
       );
-      
+
       toast('PDF gerado com sucesso!', {
         description: 'O arquivo foi baixado',
         duration: 3000
@@ -650,12 +557,12 @@ function CambialResultsWrapper({
 
   return (
     <>
-      <CambialResults 
-        processed={processed} 
+      <CambialResults
+        processed={processed}
         kpi={kpi}
         onExportClick={() => setIsExportModalOpen(true)}
       />
-      <ExportModal 
+      <ExportModal
         isOpen={isExportModalOpen}
         onClose={() => setIsExportModalOpen(false)}
         type="cambial"
