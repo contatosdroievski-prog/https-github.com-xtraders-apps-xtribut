@@ -80,7 +80,7 @@ export function LandingPage({ onLogin, onRegister }: LandingPageProps) {
 
             {/* Hero Section */}
             <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/20 via-zinc-950 to-zinc-950" />
+                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-amber-900/10 via-zinc-950 to-zinc-950" />
                 <div className="container mx-auto px-6 relative z-10">
                     <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
                         <div className="flex-1 text-center lg:text-left">
@@ -90,7 +90,7 @@ export function LandingPage({ onLogin, onRegister }: LandingPageProps) {
                             </div>
                             <h1 className="text-4xl lg:text-6xl font-bold leading-tight mb-6">
                                 Domine a Tributação de <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-600">
+                                <span className="text-amber-500">
                                     Day Trade Internacional
                                 </span>
                             </h1>
@@ -102,12 +102,6 @@ export function LandingPage({ onLogin, onRegister }: LandingPageProps) {
 
                             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
                                 <RDStationForm />
-                                <button
-                                    onClick={() => document.getElementById('vantagens')?.scrollIntoView({ behavior: 'smooth' })}
-                                    className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-xl transition-all h-fit"
-                                >
-                                    Saiba Mais
-                                </button>
                             </div>
 
                             <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-zinc-500 text-sm">
@@ -139,9 +133,9 @@ export function LandingPage({ onLogin, onRegister }: LandingPageProps) {
                             </div>
 
                             {/* Decorative Elements */}
-                            <div className="absolute -top-10 -right-10 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl" />
-                            <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl" />
-                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-teal-500/5 rounded-full blur-3xl -z-10" />
+                            <div className="absolute -top-10 -right-10 w-64 h-64 bg-amber-500/10 rounded-full blur-[100px]" />
+                            <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-cyan-500/5 rounded-full blur-[100px]" />
+                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-teal-500/5 rounded-full blur-[100px] -z-10" />
                         </div>
                     </div>
                 </div>
