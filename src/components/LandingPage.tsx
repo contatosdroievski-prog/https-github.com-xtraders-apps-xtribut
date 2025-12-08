@@ -5,6 +5,12 @@ import { LogoHeader } from './Logo';
 import { Carousel3D } from './Carousel3D';
 import { Lightbox } from './Lightbox';
 
+import printCambial from '../assets/print_cambial.png';
+import printCalendario from '../assets/print_calendario.png';
+import printApuracao from '../assets/print_apuracao.png';
+import printOperacoes from '../assets/print_operacoes.png';
+import printHistorico from '../assets/print_historico.png';
+
 interface LandingPageProps {
     onLogin: () => void;
     onRegister: () => void;
@@ -12,31 +18,31 @@ interface LandingPageProps {
 
 const showcaseImages = [
     {
-        src: "/src/assets/print_cambial.png",
+        src: printCambial,
         alt: "Relatório Cambial",
         title: "Controle Cambial",
         description: "Acompanhe seus envios e retiradas com precisão."
     },
     {
-        src: "/src/assets/print_calendario.png",
+        src: printCalendario,
         alt: "Calendário de Resultados",
         title: "Calendário Anual",
         description: "Visualização clara dos seus resultados mês a mês."
     },
     {
-        src: "/src/assets/print_apuracao.png",
+        src: printApuracao,
         alt: "Apuração de Resultados",
         title: "Apuração Automática",
         description: "Cálculo exato do imposto devido em segundos."
     },
     {
-        src: "/src/assets/print_operacoes.png",
+        src: printOperacoes,
         alt: "Detalhamento de Operações",
         title: "Detalhamento Completo",
         description: "Visualize cada operação e seu impacto no resultado."
     },
     {
-        src: "/src/assets/print_historico.png",
+        src: printHistorico,
         alt: "Histórico Anual",
         title: "Histórico Detalhado",
         description: "Todo o seu histórico de operações em um só lugar."
@@ -126,7 +132,7 @@ export function LandingPage({ onLogin, onRegister }: LandingPageProps) {
                         <div className="flex-1 relative w-full max-w-lg lg:max-w-none">
                             <div className="relative z-10 rounded-2xl border border-white/10 bg-zinc-900/50 backdrop-blur-xl shadow-2xl overflow-hidden aspect-[16/10] group">
                                 <img
-                                    src="/src/assets/print_historico.png"
+                                    src={printHistorico}
                                     alt="Dashboard Preview"
                                     className="w-full h-full object-cover"
                                 />
@@ -255,7 +261,7 @@ export function LandingPage({ onLogin, onRegister }: LandingPageProps) {
 
                         <div className="flex-1 w-full">
                             <div className="relative rounded-2xl border border-white/10 bg-zinc-950 shadow-2xl overflow-hidden aspect-video group">
-                                <img src="/src/assets/print_apuracao.png" alt="Calculator Preview" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                                <img src={printApuracao} alt="Calculator Preview" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-transparent to-transparent" />
                             </div>
                         </div>
