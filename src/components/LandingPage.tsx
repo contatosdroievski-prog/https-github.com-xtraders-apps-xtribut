@@ -97,17 +97,15 @@ export function LandingPage({ onLogin, onRegister }: LandingPageProps) {
                                 Aprenda a declarar e pagar seus impostos de CFD e Forex corretamente.
                                 Evite multas pesadas da Receita Federal e automatize seus cálculos com nossa plataforma exclusiva.
                             </p>
+                            import {RDStationForm} from './RDStationForm';
+
+                            // ... (inside component)
+
                             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
-                                <button
-                                    onClick={onRegister}
-                                    className="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-zinc-950 font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-[0_0_30px_rgba(245,158,11,0.2)]"
-                                >
-                                    Quero Regularizar Meus Ganhos
-                                    <ArrowRight className="w-5 h-5" />
-                                </button>
+                                <RDStationForm />
                                 <button
                                     onClick={() => document.getElementById('vantagens')?.scrollIntoView({ behavior: 'smooth' })}
-                                    className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-xl transition-all"
+                                    className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium rounded-xl transition-all h-fit"
                                 >
                                     Saiba Mais
                                 </button>
