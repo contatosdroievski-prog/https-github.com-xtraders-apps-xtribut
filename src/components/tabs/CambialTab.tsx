@@ -350,7 +350,7 @@ export function CambialTab() {
             <Button
               onClick={handleAddTransaction}
               variant="secondary"
-              className="flex-1"
+              className="flex-1 border-2 border-[#D4AF37] text-[#D4AF37] hover:bg-[#D4AF37]/10 hover:scale-105 transition-all duration-300 animate-pulse hover:animate-none font-semibold"
             >
               {editingId !== null ? 'Salvar Alterações' : 'Adicionar +'}
             </Button>
