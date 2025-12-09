@@ -150,6 +150,13 @@ export function CambialTab() {
       // Ordenar por data
       updatedTransactions.sort((a, b) => a.date.getTime() - b.date.getTime());
       setTransactions(updatedTransactions);
+
+      // Auto-switch to the year of the added transaction
+      const transactionYear = validationDate.getFullYear().toString();
+      if (transactionYear !== selectedYear) {
+        setSelectedYear(transactionYear);
+      }
+
       cancelEdit();
     } catch (error: any) {
       toast.error(`Não foi possível buscar a cotação do dólar. Verifique sua conexão. Erro: ${error.message}`);
