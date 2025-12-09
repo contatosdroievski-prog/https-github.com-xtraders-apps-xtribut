@@ -21,6 +21,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [withdrawals, setWithdrawals] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [tradesLoaded, setTradesLoaded] = useState(false);
+  const [withdrawalsLoaded, setWithdrawalsLoaded] = useState(false);
 
   // Listen for auth state changes
   useEffect(() => {
@@ -44,6 +46,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
             prePopulateRatesCache(loadedWithdrawals);
           }
 
+          // Mark data as loaded to enable save on changes
+          setTradesLoaded(true);
+          setWithdrawalsLoaded(true);
+
           console.log('Data loaded from Firestore');
         } catch (error) {
           console.error('Error loading data:', error);
@@ -62,8 +68,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   // Save trades to Firestore when they change
   useEffect(() => {
-    if (user && processedTrades.length > 0) {
+    if (user && tradesLoaded) {
       const timeoutId = setTimeout(() => {
+        console.log('Auto-saving trades:', processedTrades.length, 'items');
         saveTrades(user.uid, processedTrades).catch(err => {
           console.error('Error auto-saving trades:', err);
         });
@@ -71,12 +78,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [processedTrades, user]);
+  }, [processedTrades, user, tradesLoaded]);
 
   // Save withdrawals to Firestore when they change
   useEffect(() => {
-    if (user && withdrawals.length > 0) {
+    if (user && withdrawalsLoaded) {
       const timeoutId = setTimeout(() => {
+        console.log('Auto-saving withdrawals:', withdrawals.length, 'items');
         saveWithdrawals(user.uid, withdrawals).catch(err => {
           console.error('Error auto-saving withdrawals:', err);
         });
@@ -84,7 +92,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       return () => clearTimeout(timeoutId);
     }
-  }, [withdrawals, user]);
+  }, [withdrawals, user, withdrawalsLoaded]);
 
   return (
     <AppContext.Provider value={{
