@@ -1,11 +1,13 @@
 export interface Transaction {
+  id: string;
   date: Date;
   type: 'Envio' | 'Retirada' | 'Não Retirada';
   value: number;
+  cotacao?: number; // Exchange rate at transaction time
 }
 
-export interface ProcessedTransaction extends Transaction {
-  cotacao: number | null;
+export interface ProcessedTransaction extends Omit<Transaction, 'cotacao'> {
+  cotacao: number;
   valorBRL: number;
   lucroPrejuizo: number;
   saldoFinal: number;

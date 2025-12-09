@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { Button } from '../ui/button';
 import { Card } from '../ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+import { Label } from '../ui/label';
 import { Upload, AlertCircle, Download, X } from 'lucide-react';
 import { fetchBcbRateForDate, getRatesMapCompra } from '../../lib/api/bcb';
 import { formatCurrency } from '../../lib/utils/currency';
@@ -48,6 +50,43 @@ export function IrTab() {
     trades: ProcessedTrade[];
   } | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [selectedYear, setSelectedYear] = useState<string>('');
+
+  // Extract available years from the loaded CSV data
+  const availableYears = useMemo(() => {
+    if (!tradesData) return [];
+
+    const years = new Set<string>();
+    tradesData.forEach(t => {
+      const dateStr = (t['Horário'] || t['Datade  Fechamento'] || t['Time'] || t['Close Time'] || '').split(' ')[0];
+      if (!dateStr) return;
+
+      let year = '';
+      if (dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        year = parts[2]; // DD/MM/YYYY
+      } else if (dateStr.includes('.')) {
+        const parts = dateStr.split('.');
+        year = parts[0]; // YYYY.MM.DD
+      } else if (dateStr.includes('-')) {
+        const parts = dateStr.split('-');
+        year = parts[0]; // YYYY-MM-DD
+      }
+
+      if (year && year.length === 4) {
+        years.add(year);
+      }
+    });
+
+    return Array.from(years).sort().reverse();
+  }, [tradesData]);
+
+  // Auto-select the most recent year when data is loaded
+  useEffect(() => {
+    if (availableYears.length > 0 && !selectedYear) {
+      setSelectedYear(availableYears[0]);
+    }
+  }, [availableYears, selectedYear]);
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -91,9 +130,39 @@ export function IrTab() {
       return;
     }
 
+    if (!selectedYear) {
+      toast.error('Por favor, selecione o ano para processar.');
+      return;
+    }
+
+    // Filter trades by selected year
+    const filteredTrades = tradesData.filter(t => {
+      const dateStr = (t['Horário'] || t['Datade  Fechamento'] || t['Time'] || t['Close Time'] || '').split(' ')[0];
+      if (!dateStr) return false;
+
+      let year = '';
+      if (dateStr.includes('/')) {
+        const parts = dateStr.split('/');
+        year = parts[2];
+      } else if (dateStr.includes('.')) {
+        const parts = dateStr.split('.');
+        year = parts[0];
+      } else if (dateStr.includes('-')) {
+        const parts = dateStr.split('-');
+        year = parts[0];
+      }
+
+      return year === selectedYear;
+    });
+
+    if (filteredTrades.length === 0) {
+      toast.error(`Nenhum trade encontrado para o ano ${selectedYear}.`);
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      const uniqueDates = [...new Set(tradesData.map(t => {
+      const uniqueDates = [...new Set(filteredTrades.map(t => {
         const dateStr = (t['Horário'] || t['Datade  Fechamento'] || t['Time'] || t['Close Time'] || ' ').split(' ')[0];
         if (!dateStr) return null;
         if (dateStr.includes('/')) {
@@ -113,7 +182,7 @@ export function IrTab() {
 
       await Promise.all(uniqueDates.map(date => fetchBcbRateForDate(date)));
 
-      const result = apurarImposto(tradesData, getRatesMapCompra());
+      const result = apurarImposto(filteredTrades, getRatesMapCompra());
 
       setResults(result);
       // Cast to any to avoid strict type check for now, or map to Trade type if possible
@@ -179,6 +248,25 @@ export function IrTab() {
             </div>
           </div>
         </div>
+
+        {/* Year Selector */}
+        {tradesData && availableYears.length > 0 && (
+          <div className="flex justify-center items-center gap-4 mb-8">
+            <Label htmlFor="year-select" className="text-foreground font-medium">
+              Ano do Relatório:
+            </Label>
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <SelectTrigger className="w-32 bg-input-background border-border">
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableYears.map(year => (
+                  <SelectItem key={year} value={year}>{year}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
         <div className="text-center">
           <Button

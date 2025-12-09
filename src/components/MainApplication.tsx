@@ -13,11 +13,12 @@ import { HelpCircle } from 'lucide-react';
 
 interface MainApplicationProps {
   user: User | null;
+  autoStartTutorial?: boolean;
 }
 
-function MainApplicationContent({ user }: MainApplicationProps) {
+function MainApplicationContent({ user, autoStartTutorial = false }: MainApplicationProps) {
   const [activeTab, setActiveTab] = useState('cambial');
-  const { isOpen, startTour, closeTour, resetTutorial } = useTour();
+  const { isOpen, startTour, closeTour, resetTutorial } = useTour(autoStartTutorial);
 
   // Expõe funções de tour globalmente para debug
   if (typeof window !== 'undefined') {
@@ -175,10 +176,10 @@ function MainApplicationContent({ user }: MainApplicationProps) {
   );
 }
 
-export function MainApplication({ user }: MainApplicationProps) {
+export function MainApplication({ user, autoStartTutorial }: MainApplicationProps) {
   return (
     <AppProvider>
-      <MainApplicationContent user={user} />
+      <MainApplicationContent user={user} autoStartTutorial={autoStartTutorial} />
     </AppProvider>
   );
 }

@@ -3,6 +3,7 @@ import { Trade } from '../types';
 import { auth } from '../firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { saveTrades, getTrades, saveWithdrawals, getWithdrawals } from '../firestore';
+import { prePopulateRatesCache } from '../api/bcb';
 import { toast } from 'sonner';
 
 interface AppContextType {
@@ -37,6 +38,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
           setProcessedTrades(loadedTrades);
           setWithdrawals(loadedWithdrawals);
+
+          // Pre-populate exchange rates cache from stored transactions
+          if (loadedWithdrawals.length > 0) {
+            prePopulateRatesCache(loadedWithdrawals);
+          }
+
           console.log('Data loaded from Firestore');
         } catch (error) {
           console.error('Error loading data:', error);

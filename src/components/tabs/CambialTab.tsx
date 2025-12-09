@@ -26,10 +26,14 @@ import {
 export function CambialTab() {
   const { withdrawals, setWithdrawals } = useApp();
 
+  // Generate a unique ID for transactions
+  const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
   // Convert context withdrawals (any[]) to Transaction[] with Date objects
   const transactions = useMemo(() => {
     return withdrawals.map(t => ({
       ...t,
+      id: t.id || generateId(), // Ensure all transactions have IDs
       date: new Date(t.date)
     })).sort((a, b) => a.date.getTime() - b.date.getTime());
   }, [withdrawals]);
@@ -46,13 +50,33 @@ export function CambialTab() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [dateInputValue, setDateInputValue] = useState('');
   const [datePickerOpen, setDatePickerOpen] = useState(false);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [results, setResults] = useState<{
     processed: ProcessedRow[];
     kpi: CambialKpi;
   } | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [selectedYear, setSelectedYear] = useState<string>(new Date().getFullYear().toString());
+
+  // Get available years from all transactions
+  const availableYears = useMemo(() => {
+    const years = new Set<string>();
+    const currentYear = new Date().getFullYear().toString();
+    years.add(currentYear); // Always include current year
+
+    transactions.forEach(t => {
+      const year = t.date.getFullYear().toString();
+      years.add(year);
+    });
+
+    return Array.from(years).sort().reverse();
+  }, [transactions]);
+
+  // Filter transactions by selected year
+  const filteredTransactions = useMemo(() => {
+    return transactions.filter(t => t.date.getFullYear().toString() === selectedYear);
+  }, [transactions, selectedYear]);
 
   // Sincronizar selectedDate com currentTransaction.date
 
@@ -97,20 +121,26 @@ export function CambialTab() {
       return;
     }
 
-    const transactionData: Transaction = {
-      date: validationDate,
-      type: currentTransaction.type,
-      value: numericValue
-    };
-
     try {
       // Buscar cotação do BCB
       await fetchBcbRateForDate(validationDate.toISOString().split('T')[0]);
 
+      // Get the cotação and store it with the transaction
+      const cotacao = getRateForDate(validationDate, currentTransaction.type);
+
+      const transactionData: Transaction = {
+        id: editingId || generateId(),
+        date: validationDate,
+        type: currentTransaction.type,
+        value: numericValue,
+        cotacao: cotacao || undefined
+      };
+
       let updatedTransactions: Transaction[];
-      if (editingIndex !== null) {
-        updatedTransactions = [...transactions];
-        updatedTransactions[editingIndex] = transactionData;
+      if (editingId !== null) {
+        updatedTransactions = transactions.map(t =>
+          t.id === editingId ? transactionData : t
+        );
         toast.success('Transação atualizada com sucesso!');
       } else {
         updatedTransactions = [...transactions, transactionData];
@@ -126,9 +156,11 @@ export function CambialTab() {
     }
   };
 
-  const editTransaction = (index: number) => {
-    setEditingIndex(index);
-    const trans = transactions[index];
+  const editTransaction = (id: string) => {
+    const trans = transactions.find(t => t.id === id);
+    if (!trans) return;
+
+    setEditingId(id);
     setCurrentTransaction({
       date: trans.date.toISOString().split('T')[0],
       type: trans.type,
@@ -139,32 +171,33 @@ export function CambialTab() {
   };
 
   const cancelEdit = () => {
-    setEditingIndex(null);
+    setEditingId(null);
     setCurrentTransaction({ date: '', type: 'Envio', value: '' });
     setSelectedDate(undefined);
     setDateInputValue('');
   };
 
-  const removeTransaction = (index: number) => {
+  const removeTransaction = (id: string) => {
     if (confirm('Tem certeza que deseja remover este registro?')) {
-      setTransactions(transactions.filter((_, i) => i !== index));
+      const filtered = transactions.filter(t => t.id !== id);
+      setTransactions(filtered);
       toast.success('Transação removida com sucesso!');
     }
   };
 
   const handleProcess = async () => {
-    if (transactions.length === 0) {
-      toast.error('Nenhum registro foi adicionado.');
+    if (filteredTransactions.length === 0) {
+      toast.error(`Nenhum registro foi adicionado para ${selectedYear}.`);
       return;
     }
 
     setIsProcessing(true);
     try {
       // Garantir que todas as cotações foram buscadas
-      const allDates = [...new Set(transactions.map(t => t.date.toISOString().split('T')[0]))];
+      const allDates = [...new Set(filteredTransactions.map(t => t.date.toISOString().split('T')[0]))];
       await Promise.all(allDates.map(date => fetchBcbRateForDate(date)));
 
-      const result = processAndRenderCambial(transactions);
+      const result = processAndRenderCambial(filteredTransactions);
       setResults(result);
       toast.success('Dados processados com sucesso!');
     } catch (error: any) {
@@ -177,6 +210,28 @@ export function CambialTab() {
 
   return (
     <div className="space-y-6 animate-fade-in-up">
+      {/* Year Selector */}
+      <Card className="glass-card p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Label className="text-foreground font-medium">Ano de Referência:</Label>
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <SelectTrigger className="w-32 bg-input-background border-border">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {availableYears.map(year => (
+                  <SelectItem key={year} value={year}>{year}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <p className="text-sm text-muted">
+            {filteredTransactions.length} registro(s) em {selectedYear}
+          </p>
+        </div>
+      </Card>
+
       <Card className="glass-card p-6" data-tour="add-transaction">
         <h3 className="mb-4">Adicionar Transação de Capital</h3>
 
@@ -290,9 +345,9 @@ export function CambialTab() {
               variant="secondary"
               className="flex-1"
             >
-              {editingIndex !== null ? 'Salvar Alterações' : 'Adicionar +'}
+              {editingId !== null ? 'Salvar Alterações' : 'Adicionar +'}
             </Button>
-            {editingIndex !== null && (
+            {editingId !== null && (
               <Button
                 onClick={cancelEdit}
                 variant="outline"
@@ -318,9 +373,9 @@ export function CambialTab() {
           </div>
         </div>
 
-        {transactions.length > 0 && (
+        {filteredTransactions.length > 0 && (
           <div className="mt-6">
-            <h4 className="mb-3 border-t border-border pt-4">Registros a Processar:</h4>
+            <h4 className="mb-3 border-t border-border pt-4">Registros de {selectedYear}:</h4>
             <div className="overflow-x-auto bg-background rounded-md border border-border">
               <table className="min-w-full text-sm">
                 <thead>
@@ -334,12 +389,13 @@ export function CambialTab() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {transactions.map((trans, index) => {
-                    const cotacao = getRateForDate(trans.date, trans.type);
+                  {filteredTransactions.map((trans) => {
+                    // Use stored cotacao if available, otherwise try cache
+                    const cotacao = trans.cotacao || getRateForDate(trans.date, trans.type);
                     const totalBRL = cotacao ? trans.value * cotacao : null;
 
                     return (
-                      <tr key={index}>
+                      <tr key={trans.id}>
                         <td className="py-3 px-4 text-center">
                           {trans.date.toLocaleDateString('pt-BR', { timeZone: 'UTC' })}
                         </td>
@@ -354,14 +410,14 @@ export function CambialTab() {
                         <td className="py-3 px-4">
                           <div className="flex gap-3 justify-center">
                             <button
-                              onClick={() => editTransaction(index)}
+                              onClick={() => editTransaction(trans.id)}
                               className="text-muted hover:text-accent transition-colors p-1"
                               title="Editar"
                             >
                               <Edit2 className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => removeTransaction(index)}
+                              onClick={() => removeTransaction(trans.id)}
                               className="text-muted hover:text-accent transition-colors p-1"
                               title="Remover"
                             >
@@ -382,10 +438,10 @@ export function CambialTab() {
       <div className="text-center" data-tour="process-cambial">
         <Button
           onClick={handleProcess}
-          disabled={isProcessing || transactions.length === 0}
+          disabled={isProcessing || filteredTransactions.length === 0}
           className="bg-gradient-to-r from-[#D4AF37] via-[#FFEE99] to-[#D4AF37] bg-[length:150%_auto] text-[#0D0D0D] hover:bg-[length:250%_auto] transition-all duration-500"
         >
-          {isProcessing ? 'Processando...' : 'Processar Dados'}
+          {isProcessing ? 'Processando...' : `Processar Dados de ${selectedYear}`}
         </Button>
       </div>
 

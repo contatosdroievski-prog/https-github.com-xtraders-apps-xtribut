@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../lib/firebase';
 import { Button } from './ui/button';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -11,37 +13,37 @@ interface TourStep {
 }
 
 const tourSteps: TourStep[] = [
-  { 
-    element: '[data-tour="tabs"]', 
-    title: 'Navegação Principal', 
+  {
+    element: '[data-tour="tabs"]',
+    title: 'Navegação Principal',
     intro: 'Alterne entre os dashboards para suas análises. Comece sempre pela aba "Envios e Retiradas" para registrar suas movimentações de capital.',
     tab: 'cambial',
     position: 'bottom'
   },
-  { 
-    element: '[data-tour="add-transaction"]', 
-    title: 'Adicionar Transações', 
+  {
+    element: '[data-tour="add-transaction"]',
+    title: 'Adicionar Transações',
     intro: 'Preencha os dados de suas movimentações de capital (envios e retiradas). A primeira transação deve ser obrigatoriamente um ENVIO.',
     tab: 'cambial',
     position: 'bottom'
   },
-  { 
-    element: '[data-tour="process-cambial"]', 
-    title: 'Processar Análise', 
+  {
+    element: '[data-tour="process-cambial"]',
+    title: 'Processar Análise',
     intro: 'Clique aqui para executar os cálculos após preencher os dados acima. Você verá o resumo com lucro/prejuízo e impostos.',
     tab: 'cambial',
     position: 'top'
   },
-  { 
-    element: '[data-tour="tab-ir"]', 
-    title: 'Análise de IR', 
+  {
+    element: '[data-tour="tab-ir"]',
+    title: 'Análise de IR',
     intro: 'Mude para este dashboard para analisar o imposto sobre suas operações de trade. Importe seu relatório da corretora para cálculos detalhados.',
     tab: 'cambial',
     position: 'bottom'
   },
-  { 
-    element: '#upload-csv-area', 
-    title: 'Relatório de Operações', 
+  {
+    element: '#upload-csv-area',
+    title: 'Relatório de Operações',
     intro: 'Importe seu relatório da corretora (.csv) para o cálculo do IR. Suportamos relatórios da Tradelocker, MetaTrader e outras plataformas.',
     tab: 'ir',
     position: 'bottom'
@@ -125,7 +127,7 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
 
         const tooltipHeight = tooltipElement.offsetHeight;
         const tooltipWidth = tooltipElement.offsetWidth;
-        
+
         let tooltipTop: number;
         let tooltipLeft: number;
 
@@ -135,7 +137,7 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
 
         // Calcula centralização horizontal primeiro
         tooltipLeft = finalRect.left + (finalRect.width / 2) - (tooltipWidth / 2);
-        
+
         // Ajusta para não sair da tela horizontalmente
         if (tooltipLeft < margin) {
           tooltipLeft = margin;
@@ -154,7 +156,7 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
           // Tenta posicionar embaixo primeiro
           if (spaceBelow >= needsSpaceBelow) {
             tooltipTop = finalRect.bottom + minGap;
-          } 
+          }
           // Se não couber embaixo, tenta em cima
           else if (spaceAbove >= needsSpaceAbove) {
             tooltipTop = finalRect.top - tooltipHeight - minGap;
@@ -192,7 +194,7 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
           // Move para o lado se possível
           const spaceLeft = finalRect.left;
           const spaceRight = window.innerWidth - elementRight;
-          
+
           if (spaceRight >= tooltipWidth + minGap) {
             tooltipLeft = elementRight + minGap;
           } else if (spaceLeft >= tooltipWidth + minGap) {
@@ -218,22 +220,22 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
         const elementHeight = rect.height;
         const viewportHeight = window.innerHeight;
         const desiredTopMargin = 100;
-        
+
         let scrollTarget = elementTop - desiredTopMargin;
-        
+
         // Para o último step (upload CSV), fixa no topo para dar espaço ao card
         if (currentStep === tourSteps.length - 1) {
           scrollTarget = 0;
-        } 
+        }
         // Para outros steps, centraliza se o elemento couber na tela
         else if (elementHeight + desiredTopMargin + 100 < viewportHeight) {
           scrollTarget = elementTop - (viewportHeight / 2) + (elementHeight / 2);
         }
-        
+
         // Temporariamente permite scroll para posicionar
         document.body.style.overflow = 'auto';
-        
-        window.scrollTo({ 
+
+        window.scrollTo({
           top: Math.max(0, scrollTarget),
           behavior: 'smooth'
         });
@@ -258,7 +260,7 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
     }
 
     const step = tourSteps[currentStep];
-    
+
     // Limpa timeouts anteriores
     if (updateTimeoutRef.current) {
       clearTimeout(updateTimeoutRef.current);
@@ -275,7 +277,7 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
     // Muda para a aba correta se necessário
     if (step.tab && onChangeTab) {
       onChangeTab(step.tab);
-      
+
       // Aguarda a mudança de aba e renderização
       tabChangeTimeoutRef.current = setTimeout(() => {
         updatePositions(true);
@@ -308,7 +310,7 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
     };
 
     window.addEventListener('resize', handleResize);
-    
+
     return () => {
       // Restaura o scroll quando o tour fecha
       document.body.style.overflow = originalOverflow;
@@ -348,7 +350,7 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
     }
   };
 
-  const handleClose = () => {
+  const handleClose = async () => {
     // Remove z-index elevado de elementos
     document.querySelectorAll('[data-tour-active]').forEach((el) => {
       (el as HTMLElement).style.removeProperty('z-index');
@@ -356,10 +358,24 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
       el.removeAttribute('data-tour-active');
     });
 
+    // Save to Firestore that tutorial was seen
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      try {
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        await setDoc(userDocRef, {
+          tutorialSeen: true,
+          tutorialSeenAt: new Date()
+        }, { merge: true });
+      } catch (error) {
+        console.error('Error saving tutorial seen status:', error);
+      }
+    }
+
     localStorage.setItem('xtributationTutorialSeen', 'true');
     setIsVisible(false);
     setCurrentStep(0);
-    
+
     // Delay para permitir animação de saída
     setTimeout(() => {
       onClose();
@@ -377,28 +393,28 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
   return (
     <>
       {/* Overlay escuro com recorte para spotlight - Layer 1 */}
-      <div 
+      <div
         className="fixed inset-0 transition-opacity duration-500"
-        style={{ 
+        style={{
           opacity: isVisible ? 1 : 0,
           zIndex: 9996,
           pointerEvents: 'none',
         }}
       >
-        <svg 
-          width="100%" 
-          height="100%" 
+        <svg
+          width="100%"
+          height="100%"
           viewBox={`0 0 ${window.innerWidth} ${window.innerHeight}`}
           preserveAspectRatio="xMidYMid slice"
-          style={{ 
-            position: 'fixed', 
-            top: 0, 
+          style={{
+            position: 'fixed',
+            top: 0,
             left: 0,
           }}
         >
           <defs>
             <mask id="spotlight-mask">
-              <rect x="0" y="0" width="100%" height="100%" fill="white"/>
+              <rect x="0" y="0" width="100%" height="100%" fill="white" />
               {isVisible && highlightStyle.width && (
                 <rect
                   x={parseFloat(String(highlightStyle.left)) || 0}
@@ -412,12 +428,12 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
               )}
             </mask>
           </defs>
-          <rect 
-            x="0" 
-            y="0" 
-            width="100%" 
-            height="100%" 
-            fill="rgba(0, 0, 0, 0.92)" 
+          <rect
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            fill="rgba(0, 0, 0, 0.92)"
             mask="url(#spotlight-mask)"
           />
         </svg>
@@ -468,11 +484,11 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
                   className="h-1.5 rounded-full transition-all duration-300"
                   style={{
                     width: index === currentStep ? '32px' : '8px',
-                    backgroundColor: index === currentStep 
+                    backgroundColor: index === currentStep
                       ? '#D4AF37'
-                      : index < currentStep 
-                      ? 'rgba(212, 175, 55, 0.5)'
-                      : 'rgba(255, 255, 255, 0.2)',
+                      : index < currentStep
+                        ? 'rgba(212, 175, 55, 0.5)'
+                        : 'rgba(255, 255, 255, 0.2)',
                   }}
                 />
               ))}
@@ -513,7 +529,7 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
                 Anterior
               </Button>
             )}
-            
+
             <Button
               onClick={handleNext}
               size="sm"
@@ -538,7 +554,7 @@ export function Tour({ isOpen, onClose, onChangeTab }: TourProps) {
   );
 }
 
-export function useTour() {
+export function useTour(autoStart: boolean = false) {
   const [isOpen, setIsOpen] = useState(false);
 
   const startTour = useCallback(() => {
@@ -549,44 +565,53 @@ export function useTour() {
     setIsOpen(false);
   }, []);
 
-  const resetTutorial = useCallback(() => {
+  const resetTutorial = useCallback(async () => {
     localStorage.removeItem('xtributationTutorialSeen');
+
+    // Also reset in Firestore
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      try {
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        await setDoc(userDocRef, {
+          tutorialSeen: false
+        }, { merge: true });
+      } catch (error) {
+        console.error('Error resetting tutorial status:', error);
+      }
+    }
+
     console.log('✅ Tutorial resetado. Recarregue a página para ver o tour novamente.');
   }, []);
 
   useEffect(() => {
-    // Verifica se o tutorial já foi visto
-    const tutorialSeen = localStorage.getItem('xtributationTutorialSeen');
-    
-    if (!tutorialSeen) {
-      // Aguarda o DOM estar completamente carregado e as tabs renderizadas
-      const timer = setTimeout(() => {
-        // Verifica múltiplos elementos para garantir que tudo está pronto
-        const tabsElement = document.querySelector('[data-tour="tabs"]');
-        const addTransactionElement = document.querySelector('[data-tour="add-transaction"]');
-        
-        if (tabsElement && addTransactionElement) {
-          // Tudo pronto, inicia o tour
-          setTimeout(() => {
+    // Only auto-start if prop is true
+    if (!autoStart) return;
+
+    // Wait for DOM to be ready
+    const timer = setTimeout(() => {
+      const tabsElement = document.querySelector('[data-tour="tabs"]');
+      const addTransactionElement = document.querySelector('[data-tour="add-transaction"]');
+
+      if (tabsElement && addTransactionElement) {
+        setTimeout(() => {
+          startTour();
+        }, 500);
+      } else {
+        console.warn('⚠️ Elementos do tour não encontrados, aguardando mais tempo...');
+        setTimeout(() => {
+          const retry = document.querySelector('[data-tour="tabs"]');
+          if (retry) {
             startTour();
-          }, 500);
-        } else {
-          console.warn('⚠️ Elementos do tour não encontrados, aguardando mais tempo...');
-          // Tenta novamente após mais tempo
-          setTimeout(() => {
-            const retry = document.querySelector('[data-tour="tabs"]');
-            if (retry) {
-              startTour();
-            } else {
-              console.error('❌ Elementos do tour não encontrados após retry');
-            }
-          }, 1500);
-        }
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [startTour]);
+          } else {
+            console.error('❌ Elementos do tour não encontrados após retry');
+          }
+        }, 1500);
+      }
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [autoStart, startTour]);
 
   return { isOpen, startTour, closeTour, resetTutorial };
 }

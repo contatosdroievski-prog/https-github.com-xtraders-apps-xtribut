@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from './lib/firebase';
@@ -16,6 +16,7 @@ export default function App() {
   const [loadingMessage, setLoadingMessage] = useState('Carregando plataforma...');
   const [screen, setScreen] = useState<'landing' | 'login' | 'register' | 'no-access' | 'terms' | 'main'>('landing');
   const [showMain, setShowMain] = useState(false);
+  const [shouldAutoStartTutorial, setShouldAutoStartTutorial] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -41,6 +42,9 @@ export default function App() {
 
             if (hasActivePayment) {
               console.log('Iniciando aplicação principal...');
+              // Check if tutorial was already seen
+              const tutorialSeen = docSnap.data().tutorialSeen === true;
+              setShouldAutoStartTutorial(!tutorialSeen);
               showMainApplication();
             } else {
               console.log('Sem pagamento ativo, mostrando tela de acesso negado');
@@ -121,6 +125,8 @@ export default function App() {
     if (user) {
       const hasActivePayment = await checkUserPaymentStatus(user);
       if (hasActivePayment) {
+        // First time accepting terms, so tutorial should auto-start
+        setShouldAutoStartTutorial(true);
         showMainApplication();
       } else {
         setScreen('no-access');
@@ -148,7 +154,7 @@ export default function App() {
       {screen === 'main' && (
         <>
           <LoadingOverlay message={loadingMessage} visible={loading} />
-          {showMain && <MainApplication user={user} />}
+          {showMain && <MainApplication user={user} autoStartTutorial={shouldAutoStartTutorial} />}
         </>
       )}
     </>

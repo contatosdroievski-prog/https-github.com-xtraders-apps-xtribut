@@ -10,11 +10,11 @@ import {
     TableHeader,
     TableRow,
 } from "../ui/table";
-import { ChevronDown, ChevronUp, AlertCircle } from 'lucide-react';
+import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
 import { processAndRenderCambial, ProcessedRow, CambialKpi } from '../../lib/calculations/cambial';
-import { apurarImposto, IrKpiData, MonthlyResult, ProcessedTrade } from '../../lib/calculations/ir';
-import { getRatesMapCompra, getRateForDate } from '../../lib/api/bcb';
+import { IrKpiData, MonthlyResult, ProcessedTrade } from '../../lib/calculations/ir';
 import { Transaction } from '../../lib/types';
+import { toast } from 'sonner';
 
 interface YearData {
     year: string;
@@ -30,7 +30,7 @@ interface YearData {
 }
 
 export function HistoryTab() {
-    const { processedTrades, withdrawals } = useApp();
+    const { processedTrades, withdrawals, setWithdrawals, setProcessedTrades } = useApp();
     const [expandedYear, setExpandedYear] = useState<string | null>(null);
 
     const historyData = useMemo(() => {
@@ -162,6 +162,36 @@ export function HistoryTab() {
         setExpandedYear(expandedYear === year ? null : year);
     };
 
+    // Delete a withdrawal by finding it based on date and type
+    const handleDeleteWithdrawal = (date: Date, type: string) => {
+        if (!confirm('Tem certeza que deseja remover este registro?')) return;
+
+        const dateStr = date.toISOString().split('T')[0];
+        const filtered = withdrawals.filter(w => {
+            const wDateStr = (w.date instanceof Date ? w.date : new Date(w.date)).toISOString().split('T')[0];
+            return !(wDateStr === dateStr && w.type === type);
+        });
+
+        if (filtered.length < withdrawals.length) {
+            setWithdrawals(filtered);
+            toast.success('Registro removido com sucesso!');
+        }
+    };
+
+    // Delete a trade by finding it based on date and asset
+    const handleDeleteTrade = (dataIso: string, ativo: string) => {
+        if (!confirm('Tem certeza que deseja remover este trade?')) return;
+
+        const filtered = processedTrades.filter(t =>
+            !(t.data_iso === dataIso && t.ativo === ativo)
+        );
+
+        if (filtered.length < processedTrades.length) {
+            setProcessedTrades(filtered);
+            toast.success('Trade removido com sucesso!');
+        }
+    };
+
     return (
         <div className="space-y-6 animate-fade-in-up">
             <Card className="glass-card p-6">
@@ -224,6 +254,7 @@ export function HistoryTab() {
                                                                 <TableHead>Cotação</TableHead>
                                                                 <TableHead>Valor (BRL)</TableHead>
                                                                 <TableHead>L/P (BRL)</TableHead>
+                                                                <TableHead>Ações</TableHead>
                                                             </TableRow>
                                                         </TableHeader>
                                                         <TableBody>
@@ -236,6 +267,15 @@ export function HistoryTab() {
                                                                     <TableCell>{formatCurrency(row.valueBRL)}</TableCell>
                                                                     <TableCell className={row.lucroPrejuizo >= 0 ? 'text-positive' : 'text-negative'}>
                                                                         {formatCurrency(row.lucroPrejuizo)}
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <button
+                                                                            onClick={() => handleDeleteWithdrawal(row.date, row.type)}
+                                                                            className="text-muted hover:text-red-500 transition-colors p-1"
+                                                                            title="Remover"
+                                                                        >
+                                                                            <Trash2 className="w-4 h-4" />
+                                                                        </button>
                                                                     </TableCell>
                                                                 </TableRow>
                                                             ))}
